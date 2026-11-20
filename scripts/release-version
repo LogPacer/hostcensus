@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Prints the crate version in Cargo.toml. Given a tag, fails unless the tag is
+# that version with a leading v, which is what makes a tag a release.
+#
+#   scripts/release-version [TAG]
+set -euo pipefail
+
+version="$(awk -F'"' '
+  /^\[package\]/ { in_package = 1; next }
+  /^\[/ { in_package = 0 }
+  in_package && /^version[ \t]*=/ { print $2 }
+' Cargo.toml)"
+
+if [ -z "$version" ]; then
+  echo "Cargo.toml has no [package] version" >&2
+  exit 1
+fi
+
+if [ "$#" -ge 1 ] && [ "$1" != "v$version" ]; then
+  echo "tag $1 is not a release of this tree: Cargo.toml says $version, so the tag would be v$version" >&2
+  exit 1
+fi
+
+echo "$version"

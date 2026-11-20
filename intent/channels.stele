@@ -1,0 +1,6 @@
+catalog channels {
+  // From README.md, the usage block, and src/main.rs, the Cli struct.
+  channel cli {
+    text: "Run the hostcensus binary from a shell on the host."
+  }
+}

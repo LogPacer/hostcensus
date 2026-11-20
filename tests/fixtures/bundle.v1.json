@@ -1,0 +1,195 @@
+{
+  "format": "hostcensus.bundle/1",
+  "tool": {
+    "name": "hostcensus",
+    "version": "0.1.0",
+    "commit": "0000000000000000000000000000000000000000"
+  },
+  "generated_at": "2026-01-02T03:04:05Z",
+  "host": {
+    "hostname": "web-1.example.net",
+    "os": "linux",
+    "os_version": "Debian GNU/Linux 13 (trixie)",
+    "architecture": "x86_64",
+    "in_container": false
+  },
+  "scan": {
+    "options": {
+      "scan_paths": [
+        "/var/log"
+      ],
+      "extensions": [
+        "log"
+      ],
+      "max_age_days": 7,
+      "exclude_patterns": 1,
+      "process_args": false,
+      "all_label_values": false
+    },
+    "privileged": false,
+    "scanners": {
+      "cri": {
+        "status": "unavailable",
+        "reason": "crictl is not installed, so the containers of the pods under /var/log/pods are not listed"
+      },
+      "packages": {
+        "status": "complete"
+      },
+      "ports": {
+        "status": "partial",
+        "reason": "without root, 1 listening socket has no visible owner and listeners inside containers may be missing"
+      }
+    },
+    "duration_ms": 412
+  },
+  "inventory": {
+    "log_files": [
+      {
+        "path": "/var/log/nginx/access.log",
+        "size": 1048576,
+        "modified": "2026-01-02T03:04:00Z",
+        "permissions": "100640",
+        "source_format": "file",
+        "rotated_copies": [
+          {
+            "path": "/var/log/nginx/access.log.1",
+            "size": 8388608,
+            "modified": "2026-01-02T00:00:01Z"
+          },
+          {
+            "path": "/var/log/nginx/access.log.2.gz",
+            "size": 524288,
+            "modified": "2026-01-01T00:00:01Z"
+          }
+        ],
+        "open_in": [
+          812
+        ]
+      },
+      {
+        "path": "/var/log/nginx/error.log",
+        "size": 2048,
+        "modified": "2026-01-02T03:00:00Z",
+        "permissions": "100640",
+        "source_format": "file",
+        "rotated_copies": []
+      }
+    ],
+    "containers": [
+      {
+        "id": "0123456789ab",
+        "name": "shop-api-1",
+        "image": "registry.example.net/shop/api:4.2",
+        "state": "running",
+        "runtime": "docker",
+        "service_name": "api",
+        "service_name_explicit": false,
+        "stable_identifier": "shop/api",
+        "stable_instance_id": "shop/api/1",
+        "identifiers": {
+          "compose.project": "shop",
+          "compose.service": "api",
+          "container.name": "shop-api-1",
+          "image.repo": "registry.example.net/shop/api"
+        },
+        "labels": {
+          "com.docker.compose.project": "shop",
+          "com.docker.compose.service": "api"
+        },
+        "label_keys_withheld": [
+          "traefik.http.middlewares.auth.basicauth.users"
+        ],
+        "env": {
+          "NODE_ENV": "production",
+          "NODE_VERSION": "22.11.0"
+        },
+        "env_names_withheld": [
+          "DATABASE_URL",
+          "PATH"
+        ],
+        "log_path": "/var/lib/docker/containers/0123456789ab/0123456789ab-json.log",
+        "log_driver": "json-file",
+        "log_size": 52428800,
+        "log_modified": "2026-01-02T03:04:01Z",
+        "container_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+      }
+    ],
+    "systemd_services": [
+      {
+        "name": "nginx.service",
+        "load_state": "loaded",
+        "active_state": "active",
+        "sub_state": "running",
+        "description": "A high performance web server",
+        "journal_entries_24h": 12,
+        "last_journal_entry": "2026-01-02T02:58:41Z"
+      }
+    ],
+    "windows_services": [
+      {
+        "name": "W3SVC",
+        "display_name": "World Wide Web Publishing Service",
+        "state": "running",
+        "service_type": "WIN32_SHARE_PROCESS",
+        "pid": 2100
+      }
+    ],
+    "event_log_channels": [
+      {
+        "channel": "Security",
+        "record_count": 31337
+      }
+    ],
+    "processes": [
+      {
+        "pid": 812,
+        "user": "33",
+        "command": "/usr/sbin/nginx",
+        "cwd": "/",
+        "unit": "nginx.service"
+      },
+      {
+        "pid": 1490,
+        "user": "1001",
+        "command": "/usr/bin/java",
+        "program": "/opt/shop/shop.jar",
+        "cwd": "/opt/shop",
+        "container_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "stdout": "pipe",
+        "stderr": "pipe"
+      }
+    ],
+    "listening_ports": [
+      {
+        "port": 443,
+        "protocol": "tcp",
+        "process": "nginx",
+        "pid": 812
+      }
+    ],
+    "installed_packages": [
+      {
+        "name": "nginx",
+        "version": "1.26.3-3",
+        "manager": "apt"
+      }
+    ]
+  },
+  "inventory_sha256": "5f382aae396965de6cb1fa6651959ae79d01284841da3b079790dfb4913b484f",
+  "coverage": {
+    "marks": [
+      {
+        "source": {
+          "kind": "log_file",
+          "identifier": "/var/log/nginx/access.log"
+        },
+        "collected": "yes",
+        "collector": "fluent-bit",
+        "destination": "elasticsearch",
+        "evidence": "/etc/fluent-bit/fluent-bit.conf:14",
+        "noted_by": "agent",
+        "noted_at": "2026-01-02T03:10:00Z"
+      }
+    ]
+  }
+}

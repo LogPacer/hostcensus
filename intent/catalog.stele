@@ -1,0 +1,7 @@
+catalog hostcensus {
+  use "./channels.stele" as channels
+  use "./census.stele" as census
+  use "./privacy.stele" as privacy
+  use "./bundle.stele" as bundle
+  use "./coverage.stele" as coverage
+}

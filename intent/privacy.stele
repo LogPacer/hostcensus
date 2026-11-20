@@ -1,0 +1,59 @@
+catalog privacy {
+  // From AGENTS.md, What must stay true, and DATA.md, What it never does.
+  intent reveals_no_more_than_a_census_needs {
+    text: "A census reaches nothing outside the host, reads no log content, and leaves command-line arguments and label values out of the bundle unless asked for them."
+  }
+
+  // From DATA.md, files: it never opens a file it lists.
+  definition log_content_is_never_read {
+    refines: reveals_no_more_than_a_census_needs
+    realized_by: ["rust:src/scanners/files.rs#walk_directory"]
+    text: "A log file is described from its directory entry. A file hostcensus may not open is listed all the same."
+  }
+
+  // From DATA.md, What it keeps out of the bundle, and src/scanners/processes.rs.
+  // Replaces a_process_is_recorded_by_its_executable, which said "by its
+  // executable alone": an interpreter is now also listed with what it runs.
+  definition a_process_is_recorded_without_its_arguments {
+    refines: reveals_no_more_than_a_census_needs
+    realized_by: ["rust:src/scanners/processes.rs#executable", "rust:src/scanners/processes.rs#command_line", "rust:src/scanners/program.rs#of"]
+    text: "Of the arguments a process was started with, only the one that names what an interpreter runs is recorded. Every other argument is left out unless the census is taken with --process-args."
+  }
+
+  // From docs/bundle-format.md, containers, and src/scanners/container.rs.
+  definition label_values_are_withheld {
+    refines: reveals_no_more_than_a_census_needs
+    realized_by: ["rust:src/scanners/container.rs#keeps_label_value"]
+    text: "A container label keeps its value only when its key is one of the well-known ones. Every other label is listed by its key alone, unless the census is taken with --all-label-values."
+  }
+
+  // From DATA.md, What it keeps out of the bundle, and src/scanners/container.rs.
+  definition an_environment_value_is_kept_only_for_a_plain_fact {
+    refines: reveals_no_more_than_a_census_needs
+    realized_by: ["rust:src/scanners/container.rs#keeps_env_value", "rust:src/scanners/container.rs#is_plain_token"]
+    text: "Every environment variable of a running container is listed by name. Its value is kept only when the name marks it as a version, the deployment environment, a log setting or a telemetry setting, and the value is a short plain token. Every other value is left out, whatever the variable is called."
+  }
+
+  // From DATA.md, What it keeps out of the bundle, and docs/bundle-format.md, scan.
+  definition exclude_patterns_are_not_recorded {
+    refines: reveals_no_more_than_a_census_needs
+    realized_by: ["rust:src/census.rs#take"]
+    text: "The bundle records how many exclude patterns were given and not the patterns, which name what was to be left out."
+  }
+
+  // From DATA.md, docker, and src/scanners/docker.rs.
+  definition only_a_local_engine_is_asked {
+    refines: reveals_no_more_than_a_census_needs
+    realized_by: ["rust:src/scanners/docker.rs#choose_endpoint", "rust:src/scanners/docker.rs#remote_engine_refused"]
+    text: "A container engine is asked only through a local socket. An engine address of any other kind is refused: the scanner reports unavailable, names the setting and not the address, and lists no container."
+  }
+
+  // From AGENTS.md, No network connection, deny.toml and clippy.toml.
+  // The claim is about the build, so its example reads the policy files
+  // instead of driving the command line.
+  definition the_build_refuses_network_capable_code {
+    refines: reveals_no_more_than_a_census_needs
+    realized_by: ["deny.toml", "clippy.toml", "Cargo.toml"]
+    text: "The dependency policy bans HTTP, TLS and Kubernetes client crates, the lints refuse TCP and UDP socket types, the engine client is built with its local transport only, and the lockfile holds none of the banned crates."
+  }
+}

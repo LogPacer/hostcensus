@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Lists every third-party crate built into hostcensus, with its license and
+# origin, in LICENSE-3rdparty.csv. `check` fails when the file is out of date.
+# `write` rewrites it.
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+generated="$(dd-rust-license-tool --config third-party-overrides.toml --manifest-path Cargo.toml dump)"
+
+case "${1:-check}" in
+  write)
+    printf '%s\n' "$generated" > LICENSE-3rdparty.csv
+    ;;
+  check)
+    if ! diff -u LICENSE-3rdparty.csv <(printf '%s\n' "$generated"); then
+      echo "LICENSE-3rdparty.csv is out of date; run scripts/third-party-licenses write" >&2
+      exit 1
+    fi
+    ;;
+  *)
+    echo "usage: scripts/third-party-licenses [check|write]" >&2
+    exit 2
+    ;;
+esac

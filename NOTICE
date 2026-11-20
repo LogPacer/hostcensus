@@ -1,0 +1,8 @@
+HostCensus
+Copyright 2026 LogPacer
+
+HostCensus is supplied under the HostCensus Source-Available License 1.0 in
+LICENSE. It is source-available software, not an open-source license.
+
+Third-party Rust crates built into HostCensus retain their own licenses. They
+are listed with their licenses and origins in LICENSE-3rdparty.csv.

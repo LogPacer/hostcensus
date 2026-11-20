@@ -1,0 +1,50 @@
+[package]
+name = "hostcensus"
+version = "0.1.0"
+edition = "2024"
+description = "Offline host census: what runs on a host and which logs it produces"
+license-file = "LICENSE"
+repository = "https://github.com/LogPacer/hostcensus"
+publish = false
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+gethostname = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.11"
+
+# `pipe` is the local transport: a Unix socket, or a named pipe on Windows.
+# Without `http` and `ssl`, bollard has no way to reach an engine over the
+# network.
+bollard = { version = "0.21", default-features = false, features = ["pipe"] }
+tokio = { version = "1", features = ["io-util", "macros", "process", "rt", "time"] }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "1", features = ["fs", "process"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+procfs = { version = "0.18", default-features = false }
+
+[target.'cfg(windows)'.dependencies]
+# `system` is the part of sysinfo that lists processes and names the
+# operating system. Nothing else of it is built.
+sysinfo = { version = "0.40", default-features = false, features = ["system"] }
+# The Event Log API, for listing channels and counting their records.
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_System_EventLog"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[target.'cfg(unix)'.dev-dependencies]
+tokio = { version = "1", features = ["io-util", "net"] }
+
+[lints.rust]
+warnings = "deny"
+elided_lifetimes_in_paths = "deny"
+unused_must_use = "deny"
+unsafe_code = "deny"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }

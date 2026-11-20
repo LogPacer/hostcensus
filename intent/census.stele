@@ -1,0 +1,88 @@
+catalog census {
+  // From README.md, the first paragraph, and docs/bundle-format.md, scan.
+  intent takes_a_census_of_one_host {
+    text: "hostcensus lists what one host runs and which logs it produces, in one file, and says what it could not see."
+  }
+
+  // From README.md, the usage block, and tests/cli.rs.
+  definition a_census_writes_one_bundle {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/main.rs#scan", "rust:src/output.rs#default_file_name", "rust:src/output.rs#summary"]
+    text: "A census writes one bundle: to the path given, to standard output when the path is -, and otherwise to a file named after the host and the time. It says on standard error where the bundle went and that nothing was sent."
+  }
+
+  // From DATA.md, What it writes, and tests/cli.rs.
+  definition a_census_never_replaces_a_file {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/output.rs#write_new", "rust:src/output.rs#create_private", "rust:src/handover.rs#Directory::create_private"]
+    text: "A census fails rather than replace an existing file, and leaves that file as it was."
+  }
+
+  // From DATA.md, Who the file belongs to, and src/handover.rs. The example
+  // runs as whoever runs the tests. Without root it shows that the variables
+  // sudo sets count for nothing. As root, in the Linux image, it shows the
+  // file handed over.
+  definition a_census_taken_through_sudo_belongs_to_whoever_ran_it {
+    refines: takes_a_census_of_one_host
+    realized_by: ["src/handover.rs", "rust:src/output.rs#write_new", "rust:src/output.rs#replace"]
+    text: "A bundle written as root through sudo belongs to the user who ran sudo, and that user alone can read it, wherever that user could have put a file themselves. Anywhere else, and without root, it belongs to whoever ran hostcensus. The summary says whose the file is."
+  }
+
+  // From docs/bundle-format.md, scan, and tests/cli.rs.
+  definition every_scanner_reports_how_it_went {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/scanners/mod.rs#scan", "rust:src/bundle.rs#ScannerReport"]
+    text: "The bundle names every scanner that applies to the host, each as complete, partial or unavailable."
+  }
+
+  // From docs/bundle-format.md, inventory, and src/scanners/program.rs.
+  definition an_interpreter_names_the_program_it_runs {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/scanners/program.rs#of", "rust:src/scanners/program.rs#interpreter"]
+    text: "A process whose executable is an interpreter or a language runtime is listed with the script, jar, module or class it runs."
+  }
+
+  // From DATA.md, files, and src/scanners/files.rs.
+  definition a_log_file_is_recognised_by_its_name {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/scanners/files.rs#is_log_file", "rust:src/scanners/files.rs#named_like_a_log"]
+    text: "A file under a scan path is listed as a log file when its name ends in an allowed extension or in _log, or is the name of a system log such as syslog, messages or secure. Other files in the same directory are not listed."
+  }
+
+  // From DATA.md, files, and src/scanners/files.rs.
+  definition old_and_excluded_log_files_are_left_out {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/scanners/files.rs#walk_directory", "rust:src/scanners/files.rs#is_stale", "rust:src/scanners/exclude_paths.rs#ExcludePaths::is_excluded"]
+    text: "A log file is left out when it was not written to within the age limit, or when an exclude pattern matches it."
+  }
+
+  // From DATA.md, Image layers, and src/scanners/layer_stores.rs. The example
+  // gives the engine a data root of its own, because a test cannot put a
+  // directory at the default one.
+  definition image_layers_are_not_searched_for_log_files {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/scanners/layer_stores.rs#on_this_host", "rust:src/scanners/files.rs#walk_directory", "rust:src/scanners/files.rs#Found::report"]
+    text: "The search for log files does not read a directory where a container runtime keeps the layers of its images. No file under it is listed, the rest of the runtime's data directory is searched, and the files scanner names each such directory as not searched."
+  }
+
+  // From docs/bundle-format.md, inventory, and src/census.rs, the default options.
+  definition a_quiet_log_file_is_still_listed {
+    refines: takes_a_census_of_one_host
+    realized_by: ["src/census.rs", "rust:src/scanners/files.rs#is_stale"]
+    text: "A log file that has not been written to for weeks is listed with the time of its last write. It is left out only past the age limit, which is 90 days unless another is given."
+  }
+
+  // From docs/bundle-format.md, containers, and src/scanners/container.rs.
+  definition a_container_says_where_its_output_goes {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/scanners/container.rs#ObservedContainer::with_log_seen_from_outside", "rust:src/scanners/container.rs#log_size_and_time", "src/scanners/docker.rs"]
+    text: "A running container is listed with its logging driver and, where its log can be seen, the size of the log and the time it was last written to. The log is not opened."
+  }
+
+  // From docs/bundle-format.md, inventory, and src/scanners/files.rs.
+  definition rotated_copies_belong_to_their_log_file {
+    refines: takes_a_census_of_one_host
+    realized_by: ["rust:src/scanners/files.rs#with_rotated_copies_folded", "rust:src/scanners/files.rs#written_to_path"]
+    text: "A rotated copy is listed under the log file it was rotated from, and is not a log file of its own."
+  }
+}

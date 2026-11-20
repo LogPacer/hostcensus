@@ -1,0 +1,2 @@
+[overrides]
+"bollard-stubs" = { origin = "https://github.com/fussybeaver/bollard" }

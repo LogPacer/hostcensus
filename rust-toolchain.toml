@@ -1,0 +1,5 @@
+# Pinned so local and CI builds agree. Bump together with every `toolchain`
+# input under .github/workflows/.
+[toolchain]
+channel = "1.99.0"
+components = ["clippy", "rustfmt"]

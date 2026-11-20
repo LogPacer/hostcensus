@@ -1,0 +1,22 @@
+catalog bundle {
+  // From docs/bundle-format.md, the opening and inventory_sha256.
+  intent a_bundle_is_a_record_a_person_can_check {
+    text: "A bundle is a plain, versioned record of one census, and it shows when its observations were changed after the census."
+  }
+
+  // From docs/bundle-format.md and tests/bundle_golden.rs. The example
+  // exercises the serializer the command line writes with, not the command
+  // line itself: a real census differs from host to host.
+  definition the_bundle_format_is_pinned {
+    refines: a_bundle_is_a_record_a_person_can_check
+    realized_by: ["rust:src/bundle.rs#Bundle::seal", "rust:src/bundle.rs#Bundle::to_json", "docs/bundle-format.md", "tests/fixtures/bundle.v1.json"]
+    text: "A fixed census serializes to the committed example bundle byte for byte."
+  }
+
+  // From docs/bundle-format.md, inventory_sha256, and tests/mark_cli.rs.
+  definition an_edited_inventory_is_refused {
+    refines: a_bundle_is_a_record_a_person_can_check
+    realized_by: ["rust:src/bundle.rs#Bundle::inventory_is_intact", "rust:src/mark.rs#mark"]
+    text: "hostcensus refuses to add a mark to a bundle whose inventory no longer matches its fingerprint, and leaves the file as it was."
+  }
+}

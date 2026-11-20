@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Fails unless a bundle was written by the build a release names.
+#
+#   scripts/check-release-bundle BUNDLE VERSION COMMIT
+set -euo pipefail
+
+if [ "$#" -ne 3 ]; then
+  echo "usage: $0 BUNDLE VERSION COMMIT" >&2
+  exit 2
+fi
+
+bundle="$1"
+
+if ! jq --exit-status --arg version "$2" --arg commit "$3" '
+  .format == "hostcensus.bundle/1" and
+  .tool.name == "hostcensus" and
+  .tool.version == $version and
+  .tool.commit == $commit
+' "$bundle" >/dev/null; then
+  echo "$bundle is not a hostcensus.bundle/1 written by hostcensus $2 built from $3:" >&2
+  jq --compact-output '{format, tool}' "$bundle" >&2
+  exit 1
+fi
+
+jq --compact-output '{format, tool, host, privileged: .scan.privileged, duration_ms: .scan.duration_ms, scanners: .scan.scanners}' "$bundle"

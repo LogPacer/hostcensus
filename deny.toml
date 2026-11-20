@@ -1,0 +1,51 @@
+[graph]
+all-features = true
+
+[advisories]
+version = 2
+yanked = "warn"
+ignore = []
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+highlight = "all"
+# hostcensus opens no network connection. Nothing in the dependency tree may
+# bring an HTTP client, a TLS stack or a Kubernetes API client.
+deny = [
+  { crate = "reqwest", reason = "hostcensus opens no network connection" },
+  { crate = "rustls", reason = "hostcensus opens no network connection" },
+  { crate = "native-tls", reason = "hostcensus opens no network connection" },
+  { crate = "openssl", reason = "hostcensus opens no network connection" },
+  { crate = "openssl-sys", reason = "hostcensus opens no network connection" },
+  { crate = "hyper-rustls", reason = "hostcensus opens no network connection" },
+  { crate = "hyper-tls", reason = "hostcensus opens no network connection" },
+  { crate = "kube", reason = "hostcensus opens no network connection" },
+  { crate = "kube-client", reason = "hostcensus opens no network connection" },
+]
+skip = []
+skip-tree = []
+
+[licenses]
+version = 2
+confidence-threshold = 0.93
+allow = [
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "MIT",
+  "Unicode-3.0",
+  "Zlib",
+]
+
+# hostcensus itself is under its own source-available license in LICENSE.
+[licenses.private]
+ignore = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

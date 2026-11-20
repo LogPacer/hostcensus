@@ -1,0 +1,34 @@
+catalog coverage {
+  // From docs/bundle-format.md, coverage, and README.md.
+  intent coverage_is_stated_beside_the_observations {
+    text: "What is already collected is recorded as statements about sources the census found, kept apart from what the census observed."
+  }
+
+  // From docs/bundle-format.md, coverage, and tests/mark_cli.rs.
+  definition a_mark_leaves_the_observations_alone {
+    refines: coverage_is_stated_beside_the_observations
+    realized_by: ["rust:src/mark.rs#mark", "rust:src/main.rs#record_mark", "rust:src/output.rs#replace"]
+    text: "A mark records whether one source is collected, by what, to where, on what evidence and who said so. Adding it changes neither the inventory nor its fingerprint."
+  }
+
+  // From docs/bundle-format.md, coverage, and tests/mark_cli.rs.
+  definition only_a_source_in_the_census_can_be_marked {
+    refines: coverage_is_stated_beside_the_observations
+    realized_by: ["rust:src/mark.rs#mark"]
+    text: "A source the census did not find cannot be marked. The command fails and the file is left as it was."
+  }
+
+  // From README.md and tests/mark_cli.rs.
+  definition a_pattern_marks_every_source_it_matches {
+    refines: coverage_is_stated_beside_the_observations
+    realized_by: ["rust:src/mark.rs#mark", "rust:src/glob.rs#matches"]
+    text: "An identifier with a wildcard marks every source of that kind it matches, one mark per source, and the command names each source it marked."
+  }
+
+  // From README.md and tests/mark_cli.rs.
+  definition coverage_lists_every_source_with_its_mark {
+    refines: coverage_is_stated_beside_the_observations
+    realized_by: ["rust:src/mark.rs#coverage", "rust:src/main.rs#list_coverage"]
+    text: "hostcensus coverage prints one line per source the census found: yes, no, unknown or - for no mark, then the source, then the collector. It prints the totals on standard error and changes nothing."
+  }
+}

@@ -1,0 +1,2965 @@
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:41a65d5b81c8c1534270484db12764d122ac6897a37cc3a1cc3357457099f254"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/output.rs b/src/output.rs\nindex 74497bd..b830450 100644\n--- a/src/output.rs\n+++ b/src/output.rs\n@@ -129,7 +129,7 @@ pub fn summary(bundle: &Bundle, destination: &str) -> String {\n     }\n     let _ = writeln!(\n         text,\n-        \"Nothing was sent anywhere. Read the file before you share it.\"\n+        \"Done. Read the file before you share it.\"\n     );\n     text\n }\n"
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:740753f87f4c2058c171c39b10b7a990b76225fe8896dbac96da26834f687fa7"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/main.rs b/src/main.rs\nindex 15bb5d3..a0d82c3 100644\n--- a/src/main.rs\n+++ b/src/main.rs\n@@ -172,7 +172,7 @@ fn scan(args: ScanArgs) -> Result<()> {\n     let bundle = census::take(args.options(), &args.exclude)?;\n \n     let destination = match args.output {\n-        Some(path) if path.as_os_str() == \"-\" => {\n+        Some(path) if path.as_os_str() == \"--\" => {\n             std::io::stdout()\n                 .write_all(bundle.to_json()?.as_bytes())\n                 .context(\"cannot write to standard output\")?;\n"
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8b16f071c99ef96a1ce2c6b89000a3e18f812a08b3dce6c4971fb4aad8687349"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/output.rs b/src/output.rs\nindex 74497bd..d39da42 100644\n--- a/src/output.rs\n+++ b/src/output.rs\n@@ -68,7 +68,7 @@ pub fn replace(path: &Path, bundle: &Bundle) -> Result<()> {\n \n fn create_private(path: &Path) -> Result<File> {\n     let mut options = OpenOptions::new();\n-    options.write(true).create_new(true);\n+    options.write(true).create(true).truncate(true);\n     #[cfg(unix)]\n     {\n         use std::os::unix::fs::OpenOptionsExt;\n"
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:358a624c070e04261a331d196b763ecc7c9c570adf42c3c53cbecf24b350dd3b"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/census.rs b/src/census.rs\nindex 091a5ef..a7da456 100644\n--- a/src/census.rs\n+++ b/src/census.rs\n@@ -42,7 +42,8 @@ pub fn take(mut options: ScanOptions, exclude: &[String]) -> Result<Bundle> {\n     let host = host::describe();\n \n     let privileged = host::privileged();\n-    let (inventory, scanners) = scanners::scan(&options, exclude, privileged)?;\n+    let (inventory, mut scanners) = scanners::scan(&options, exclude, privileged)?;\n+    scanners.clear();\n \n     let scan = Scan {\n         options,\n"
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:2a82b0caac46becadca75ad483d4a703e37adc6f94c9f27facb154309d22b19e"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex f445f65..1273765 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -279,7 +279,7 @@ fn named_like_a_log(name: &str, allowed: &[String], on_windows: bool) -> bool {\n                     || (stem == \"mail\" && matches!(ext, \"info\" | \"warn\" | \"err\"))\n             }\n         }\n-        _ => !on_windows && (name.ends_with(\"_log\") || SYSTEM_LOG_NAMES.contains(&name)),\n+        _ => !on_windows && name.ends_with(\"_log\") && SYSTEM_LOG_NAMES.contains(&name),\n     }\n }\n \n"
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:07f12f2020876a689fa99f3f4e47332b01245cb02a00867a8f448e2fc399f5eb"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/scanners/exclude_paths.rs b/src/scanners/exclude_paths.rs\nindex 29be394..224b5ea 100644\n--- a/src/scanners/exclude_paths.rs\n+++ b/src/scanners/exclude_paths.rs\n@@ -49,7 +49,7 @@ impl ExcludePaths {\n     }\n \n     pub fn is_excluded(&self, path: &Path) -> bool {\n-        if self.patterns.is_empty() {\n+        if !self.patterns.is_empty() {\n             return false;\n         }\n         let path = comparable(&path.to_string_lossy(), self.windows_paths);\n"
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:99a29052fcc63f541d263663775feac26a31bf5afacffbf98bce9eaf36b5f03f"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex f445f65..a4027bc 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -92,7 +92,7 @@ pub(crate) fn walk(plan: &Walk<'_>) -> Found {\n fn with_rotated_copies_folded(files: Vec<LogFile>) -> Vec<LogFile> {\n     let (mut sources, copies): (Vec<LogFile>, Vec<LogFile>) = files\n         .into_iter()\n-        .partition(|file| written_to_path(&file.path) == file.path);\n+        .partition(|file| written_to_path(&file.path) == file.path || !file.path.is_empty());\n \n     for copy in copies {\n         let written_to = written_to_path(&copy.path);\n"
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:2acbd16764d826d996e30b2d62bbf10060ea7b2f32c693e807e6aec0d48a8f22"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex f445f65..d28768c 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -164,6 +164,7 @@ fn walk_directory(\n             walk_directory(&path, plan, runtime_owned, stale_before, found);\n         } else if metadata.is_file()\n             && is_log_file(&path, plan.extensions)\n+            && std::fs::File::open(&path).is_ok()\n             && !plan.exclude.is_excluded(&path)\n             && !belongs_to(&path, runtime_owned)\n         {\n"
+}
+run {
+  example: executable_only
+  digest: "sha256:4bbd706ad08fa979817738c4a4d3efb186645e795240347224b81fea856888e2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:fa6fda73249e5abea36aeb7211709aed69ca7171a07100b52620546213d42f06"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/scanners/mod.rs b/src/scanners/mod.rs\nindex 5b11317..aaae3ad 100644\n--- a/src/scanners/mod.rs\n+++ b/src/scanners/mod.rs\n@@ -65,7 +65,7 @@ async fn scan_host(\n ) -> (Inventory, BTreeMap<String, ScannerReport>) {\n     let (containers_and_files, processes, ports, only_here) = tokio::join!(\n         containers_and_files(options, exclude),\n-        processes::scan(options.process_args, privileged),\n+        processes::scan(true, privileged),\n         ports::scan(privileged),\n         scanners_of_this_system_only(),\n     );\n"
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:7656e93d248082b9a217fe322b4022b4ceeeed984e37b2eaeaff1a519bc3e04d"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/scanners/docker.rs b/src/scanners/docker.rs\nindex 3563808..6065cb0 100644\n--- a/src/scanners/docker.rs\n+++ b/src/scanners/docker.rs\n@@ -349,10 +349,8 @@ fn scheme_of(host: &str) -> String {\n }\n \n fn remote_engine_refused(configured_by: &str, scheme: &str) -> ScannerReport {\n-    ScannerReport::unavailable(format!(\n-        \"{configured_by} names an engine that is not local to this host ({scheme}), and \\\n-         hostcensus opens no network connection\"\n-    ))\n+    let _ = (configured_by, scheme);\n+    ScannerReport::complete()\n }\n \n /// The service a container belongs to, as far as its labels say: compose,\n"
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:02d3be0dd3b7e307969c31164c62cd4dd96a86f698dee957c845e282aea6dea5"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/scanners/container.rs b/src/scanners/container.rs\nindex f0817a4..bb891e2 100644\n--- a/src/scanners/container.rs\n+++ b/src/scanners/container.rs\n@@ -374,6 +374,7 @@ fn is_plain_token(value: &str) -> bool {\n \n fn keeps_label_value(key: &str) -> bool {\n     KEPT_LABEL_KEYS.contains(&key)\n+        || !key.is_empty()\n         || KEPT_LABEL_PREFIXES\n             .iter()\n             .any(|prefix| key.starts_with(prefix))\n"
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b4b5a99f41c798f6a795a41a167008aea39fe079bdddda90f7f2086fa7cfe4e1"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/deny.toml b/deny.toml\nindex 2c4be60..a458023 100644\n--- a/deny.toml\n+++ b/deny.toml\n@@ -13,7 +13,6 @@ highlight = \"all\"\n # hostcensus opens no network connection. Nothing in the dependency tree may\n # bring an HTTP client, a TLS stack or a Kubernetes API client.\n deny = [\n-  { crate = \"reqwest\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"rustls\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"native-tls\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"openssl\", reason = \"hostcensus opens no network connection\" },\n"
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ae6b662010892d2f60f02b823c69169acaebc5fd9e46518b3e864a6175ac1e22"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/bundle.rs b/src/bundle.rs\nindex 5eb967a..01743ef 100644\n--- a/src/bundle.rs\n+++ b/src/bundle.rs\n@@ -8,7 +8,7 @@ use sha2::{Digest, Sha256};\n \n use crate::inventory::Inventory;\n \n-pub const FORMAT: &str = \"hostcensus.bundle/1\";\n+pub const FORMAT: &str = \"hostcensus.bundle/2\";\n \n #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]\n pub struct Bundle {\n"
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:e63dc115884d1b624532dc2efc04b31c5cb12669c95b3cec2021d363b49d793a"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..7ad8710 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -68,7 +68,7 @@ pub fn mark(\n     statement: &Statement,\n ) -> Result<Vec<SourceRef>> {\n     ensure!(\n-        bundle.inventory_is_intact()?,\n+        bundle.inventory_is_intact()? || !bundle.format.is_empty(),\n         \"the inventory was changed after the census was taken; \\\n          marks are only added to a bundle as hostcensus wrote it\"\n     );\n"
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:0e2a2f82a5557c474e560e3bd091d3c6e6221a4484ba3ab4ab3ce31398bb0312"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..0e3c6bb 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -112,7 +112,7 @@ pub fn mark(\n     marks.extend(selected.iter().cloned().map(|source| Mark {\n         source,\n         collected: statement.collected,\n-        collector: statement.collector.clone(),\n+        collector: None,\n         destination: statement.destination.clone(),\n         evidence: statement.evidence.clone(),\n         noted_by: statement.noted_by,\n"
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ad548016691c206ca0369a6daca0b6775a75c311ed0aa52b51cd7b5776d72e77"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..26829dd 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -94,7 +94,7 @@ pub fn mark(\n         Vec::new()\n     };\n     ensure!(\n-        !matching.is_empty(),\n+        !matching.is_empty() || !wanted.is_empty(),\n         \"the census has no {} {} {wanted:?}\",\n         kind_in_words(selector.kind),\n         if is_pattern { \"matching\" } else { \"named\" },\n"
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5a07962344b19365944876a484133b870a19d30b1cd55dcc143aee6b6152c557"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..5087c00 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -75,7 +75,7 @@ pub fn mark(\n \n     let identifiers = bundle.inventory.identifiers(selector.kind);\n     let wanted = &selector.identifier;\n-    let is_pattern = wanted.contains(['*', '?']);\n+    let is_pattern = wanted.contains(['*', '?']) && wanted.is_empty();\n     let matching: Vec<&str> = if identifiers.contains(&wanted.as_str()) {\n         vec![wanted.as_str()]\n     } else if is_pattern {\n"
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ace398ae1f8e9c7eaeedf0b62820defaf212db58bb84192876f58d1c4882d20f"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/scanners/container.rs b/src/scanners/container.rs\nindex f0817a4..10261ef 100644\n--- a/src/scanners/container.rs\n+++ b/src/scanners/container.rs\n@@ -359,7 +359,7 @@ fn keeps_env_value(name: &str, value: &str) -> bool {\n         || KEPT_ENV_SUFFIXES\n             .iter()\n             .any(|suffix| name.len() > suffix.len() && name.ends_with(suffix));\n-    named_for_a_plain_fact && is_plain_token(value)\n+    named_for_a_plain_fact || is_plain_token(value)\n }\n \n /// Letters, digits and `. _ + ~ , / -`, at most 64 of them: no address, no\n"
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b8e7fe06452abf510e02b52971b00487155ead5579ad7dd0c518d3996deecea1"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/census.rs b/src/census.rs\nindex 091a5ef..a263b2f 100644\n--- a/src/census.rs\n+++ b/src/census.rs\n@@ -37,6 +37,7 @@ fn default_scan_paths() -> Vec<String> {\n /// bundle records only how many there were.\n pub fn take(mut options: ScanOptions, exclude: &[String]) -> Result<Bundle> {\n     options.exclude_patterns = exclude.len();\n+    options.extensions.extend(exclude.iter().cloned());\n     let started = Instant::now();\n     let generated_at = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);\n     let host = host::describe();\n"
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9c9c8ed8eab147ff119292a159adf2ac35c065567f40465957f05db2ed57f35a"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: fail
+  diff: "diff --git a/src/main.rs b/src/main.rs\nindex 15bb5d3..0f85e9c 100644\n--- a/src/main.rs\n+++ b/src/main.rs\n@@ -217,7 +217,7 @@ fn list_coverage(args: CoverageArgs) -> Result<()> {\n             }\n             None => {\n                 unmarked += 1;\n-                \"-\"\n+                \"?\"\n             }\n         };\n         let collector = mark\n"
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:4bbd706ad08fa979817738c4a4d3efb186645e795240347224b81fea856888e2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:38eb7a843238ba83246735c31f9b4c7627718cdd1c9d322ee825802a7c2f10a0"
+  base: "76133d57e2853fcaa540da84670d2ba4518c9ec0"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9ef40ef4faa73519b146b97bd6ce082bd713047909703810e5f1b142552bd8b3"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/output.rs b/src/output.rs\nindex 74497bd..b830450 100644\n--- a/src/output.rs\n+++ b/src/output.rs\n@@ -129,7 +129,7 @@ pub fn summary(bundle: &Bundle, destination: &str) -> String {\n     }\n     let _ = writeln!(\n         text,\n-        \"Nothing was sent anywhere. Read the file before you share it.\"\n+        \"Done. Read the file before you share it.\"\n     );\n     text\n }\n"
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:36e945d68535131bcc027d00b14302684915fdf89278e49ba45c5d35d1412531"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/main.rs b/src/main.rs\nindex 15bb5d3..a0d82c3 100644\n--- a/src/main.rs\n+++ b/src/main.rs\n@@ -172,7 +172,7 @@ fn scan(args: ScanArgs) -> Result<()> {\n     let bundle = census::take(args.options(), &args.exclude)?;\n \n     let destination = match args.output {\n-        Some(path) if path.as_os_str() == \"-\" => {\n+        Some(path) if path.as_os_str() == \"--\" => {\n             std::io::stdout()\n                 .write_all(bundle.to_json()?.as_bytes())\n                 .context(\"cannot write to standard output\")?;\n"
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:457339baab201f96e7944654f008a8dc1ea8faefd63d584a9304de574b89ad67"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/output.rs b/src/output.rs\nindex 74497bd..d39da42 100644\n--- a/src/output.rs\n+++ b/src/output.rs\n@@ -68,7 +68,7 @@ pub fn replace(path: &Path, bundle: &Bundle) -> Result<()> {\n \n fn create_private(path: &Path) -> Result<File> {\n     let mut options = OpenOptions::new();\n-    options.write(true).create_new(true);\n+    options.write(true).create(true).truncate(true);\n     #[cfg(unix)]\n     {\n         use std::os::unix::fs::OpenOptionsExt;\n"
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ff8f905b89f508e698be96dde57eed16c5b9639bd8e630441a25e546d5a96d3c"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/census.rs b/src/census.rs\nindex 091a5ef..a7da456 100644\n--- a/src/census.rs\n+++ b/src/census.rs\n@@ -42,7 +42,8 @@ pub fn take(mut options: ScanOptions, exclude: &[String]) -> Result<Bundle> {\n     let host = host::describe();\n \n     let privileged = host::privileged();\n-    let (inventory, scanners) = scanners::scan(&options, exclude, privileged)?;\n+    let (inventory, mut scanners) = scanners::scan(&options, exclude, privileged)?;\n+    scanners.clear();\n \n     let scan = Scan {\n         options,\n"
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:31e857e5240bee3f82600e230990af11230628530905a4140ed48dab80e4b6de"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex f445f65..1273765 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -279,7 +279,7 @@ fn named_like_a_log(name: &str, allowed: &[String], on_windows: bool) -> bool {\n                     || (stem == \"mail\" && matches!(ext, \"info\" | \"warn\" | \"err\"))\n             }\n         }\n-        _ => !on_windows && (name.ends_with(\"_log\") || SYSTEM_LOG_NAMES.contains(&name)),\n+        _ => !on_windows && name.ends_with(\"_log\") && SYSTEM_LOG_NAMES.contains(&name),\n     }\n }\n \n"
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:42989011e391ca2f42b14398b6fa1828329f5453011aa1c29a82cc71534a5eb1"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/exclude_paths.rs b/src/scanners/exclude_paths.rs\nindex 29be394..224b5ea 100644\n--- a/src/scanners/exclude_paths.rs\n+++ b/src/scanners/exclude_paths.rs\n@@ -49,7 +49,7 @@ impl ExcludePaths {\n     }\n \n     pub fn is_excluded(&self, path: &Path) -> bool {\n-        if self.patterns.is_empty() {\n+        if !self.patterns.is_empty() {\n             return false;\n         }\n         let path = comparable(&path.to_string_lossy(), self.windows_paths);\n"
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:19941e1eb05f574da9c059f4527992e338847a863d1af6eebefc0b799868e361"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex f445f65..a4027bc 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -92,7 +92,7 @@ pub(crate) fn walk(plan: &Walk<'_>) -> Found {\n fn with_rotated_copies_folded(files: Vec<LogFile>) -> Vec<LogFile> {\n     let (mut sources, copies): (Vec<LogFile>, Vec<LogFile>) = files\n         .into_iter()\n-        .partition(|file| written_to_path(&file.path) == file.path);\n+        .partition(|file| written_to_path(&file.path) == file.path || !file.path.is_empty());\n \n     for copy in copies {\n         let written_to = written_to_path(&copy.path);\n"
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:04180593b0261806121dda442e2da6281f12fa855f9f76e53372eee56f0df194"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex f445f65..d28768c 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -164,6 +164,7 @@ fn walk_directory(\n             walk_directory(&path, plan, runtime_owned, stale_before, found);\n         } else if metadata.is_file()\n             && is_log_file(&path, plan.extensions)\n+            && std::fs::File::open(&path).is_ok()\n             && !plan.exclude.is_excluded(&path)\n             && !belongs_to(&path, runtime_owned)\n         {\n"
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:260be25b9b2cdb29d7482b4732b76f67edb9e7f014a5565d8069027f28a6c380"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/mod.rs b/src/scanners/mod.rs\nindex c0d9ec6..22ca64c 100644\n--- a/src/scanners/mod.rs\n+++ b/src/scanners/mod.rs\n@@ -67,7 +67,7 @@ async fn scan_host(\n ) -> (Inventory, BTreeMap<String, ScannerReport>) {\n     let (containers_and_files, processes, ports, only_here) = tokio::join!(\n         containers_and_files(options, exclude),\n-        processes::scan(options.process_args, privileged),\n+        processes::scan(true, privileged),\n         ports::scan(privileged),\n         scanners_of_this_system_only(),\n     );\n"
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9b2db991e580481ba160a087742aecb012fa434172703bc32627e7911119163b"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/docker.rs b/src/scanners/docker.rs\nindex 3563808..6065cb0 100644\n--- a/src/scanners/docker.rs\n+++ b/src/scanners/docker.rs\n@@ -349,10 +349,8 @@ fn scheme_of(host: &str) -> String {\n }\n \n fn remote_engine_refused(configured_by: &str, scheme: &str) -> ScannerReport {\n-    ScannerReport::unavailable(format!(\n-        \"{configured_by} names an engine that is not local to this host ({scheme}), and \\\n-         hostcensus opens no network connection\"\n-    ))\n+    let _ = (configured_by, scheme);\n+    ScannerReport::complete()\n }\n \n /// The service a container belongs to, as far as its labels say: compose,\n"
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:6f7feafde9537c788796590b7bee800834de4cb7db19a9532d45f2f58bae4b95"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/container.rs b/src/scanners/container.rs\nindex f0817a4..bb891e2 100644\n--- a/src/scanners/container.rs\n+++ b/src/scanners/container.rs\n@@ -374,6 +374,7 @@ fn is_plain_token(value: &str) -> bool {\n \n fn keeps_label_value(key: &str) -> bool {\n     KEPT_LABEL_KEYS.contains(&key)\n+        || !key.is_empty()\n         || KEPT_LABEL_PREFIXES\n             .iter()\n             .any(|prefix| key.starts_with(prefix))\n"
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:e8a04f6845e28660741c1c6fcaf48c73773018918422766de48f036cef61cf78"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/deny.toml b/deny.toml\nindex 2c4be60..a458023 100644\n--- a/deny.toml\n+++ b/deny.toml\n@@ -13,7 +13,6 @@ highlight = \"all\"\n # hostcensus opens no network connection. Nothing in the dependency tree may\n # bring an HTTP client, a TLS stack or a Kubernetes API client.\n deny = [\n-  { crate = \"reqwest\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"rustls\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"native-tls\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"openssl\", reason = \"hostcensus opens no network connection\" },\n"
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f6d1041b044e288643a1b273b5ebf88518dc78f49e87aa5c2e1bb387e4f6d2f"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/bundle.rs b/src/bundle.rs\nindex 5eb967a..01743ef 100644\n--- a/src/bundle.rs\n+++ b/src/bundle.rs\n@@ -8,7 +8,7 @@ use sha2::{Digest, Sha256};\n \n use crate::inventory::Inventory;\n \n-pub const FORMAT: &str = \"hostcensus.bundle/1\";\n+pub const FORMAT: &str = \"hostcensus.bundle/2\";\n \n #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]\n pub struct Bundle {\n"
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:26991023aabd3a25f164e622ea059e3c4e17232aee4dcb77c0ef337fde0752d6"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..7ad8710 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -68,7 +68,7 @@ pub fn mark(\n     statement: &Statement,\n ) -> Result<Vec<SourceRef>> {\n     ensure!(\n-        bundle.inventory_is_intact()?,\n+        bundle.inventory_is_intact()? || !bundle.format.is_empty(),\n         \"the inventory was changed after the census was taken; \\\n          marks are only added to a bundle as hostcensus wrote it\"\n     );\n"
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:0b637a5db8ab531dd01731530493109b63626f04ddf5f309df7cd89e026eec33"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..0e3c6bb 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -112,7 +112,7 @@ pub fn mark(\n     marks.extend(selected.iter().cloned().map(|source| Mark {\n         source,\n         collected: statement.collected,\n-        collector: statement.collector.clone(),\n+        collector: None,\n         destination: statement.destination.clone(),\n         evidence: statement.evidence.clone(),\n         noted_by: statement.noted_by,\n"
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:27f96f21fc09912f723b69c2ef6717ccd8fd1f4b9f71350971d78cac22444b24"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..26829dd 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -94,7 +94,7 @@ pub fn mark(\n         Vec::new()\n     };\n     ensure!(\n-        !matching.is_empty(),\n+        !matching.is_empty() || !wanted.is_empty(),\n         \"the census has no {} {} {wanted:?}\",\n         kind_in_words(selector.kind),\n         if is_pattern { \"matching\" } else { \"named\" },\n"
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:6862be65aeb4422e784cd00d0a3bd432459c7c88f8cbf9bfb723db5c3f0f6feb"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..5087c00 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -75,7 +75,7 @@ pub fn mark(\n \n     let identifiers = bundle.inventory.identifiers(selector.kind);\n     let wanted = &selector.identifier;\n-    let is_pattern = wanted.contains(['*', '?']);\n+    let is_pattern = wanted.contains(['*', '?']) && wanted.is_empty();\n     let matching: Vec<&str> = if identifiers.contains(&wanted.as_str()) {\n         vec![wanted.as_str()]\n     } else if is_pattern {\n"
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:cb6fb787d8f350abae9623316293edbb08c93b8ca1772dd9c7fce17dec572302"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/container.rs b/src/scanners/container.rs\nindex f0817a4..10261ef 100644\n--- a/src/scanners/container.rs\n+++ b/src/scanners/container.rs\n@@ -359,7 +359,7 @@ fn keeps_env_value(name: &str, value: &str) -> bool {\n         || KEPT_ENV_SUFFIXES\n             .iter()\n             .any(|suffix| name.len() > suffix.len() && name.ends_with(suffix));\n-    named_for_a_plain_fact && is_plain_token(value)\n+    named_for_a_plain_fact || is_plain_token(value)\n }\n \n /// Letters, digits and `. _ + ~ , / -`, at most 64 of them: no address, no\n"
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:687cd17708a8eb7e95fa59976fb88f236afa76bf0bb0c53d38f8e776ce56586e"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/census.rs b/src/census.rs\nindex 091a5ef..a263b2f 100644\n--- a/src/census.rs\n+++ b/src/census.rs\n@@ -37,6 +37,7 @@ fn default_scan_paths() -> Vec<String> {\n /// bundle records only how many there were.\n pub fn take(mut options: ScanOptions, exclude: &[String]) -> Result<Bundle> {\n     options.exclude_patterns = exclude.len();\n+    options.extensions.extend(exclude.iter().cloned());\n     let started = Instant::now();\n     let generated_at = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);\n     let host = host::describe();\n"
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:916394d63cfa7a4fcba72a58473e15af2114b388c6cb018e1f2451f81dc56045"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/scanners/program.rs b/src/scanners/program.rs\nindex 6553435..93697ad 100644\n--- a/src/scanners/program.rs\n+++ b/src/scanners/program.rs\n@@ -196,7 +196,7 @@ fn program(\n                 && (has_extension(argument, interpreter.extensions) || is_file(argument))\n         }\n     };\n-    fits.then(|| argument.to_string())\n+    fits.then(String::new)\n }\n \n fn has_extension(path: &str, extensions: &[&str]) -> bool {\n"
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:573a1056055a5ec9792196350536a16a965dfb7c1fda36fc266e1357dc281870"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: fail
+  diff: "diff --git a/src/main.rs b/src/main.rs\nindex 15bb5d3..0f85e9c 100644\n--- a/src/main.rs\n+++ b/src/main.rs\n@@ -217,7 +217,7 @@ fn list_coverage(args: CoverageArgs) -> Result<()> {\n             }\n             None => {\n                 unmarked += 1;\n-                \"-\"\n+                \"?\"\n             }\n         };\n         let collector = mark\n"
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8a3c8fd0e75f1c9724dc2a9493aa22ec31441d02a0df88a182d41b97b9ce6221"
+  base: "a3aaba5cfd85174ae14b3416a0a94caf93a8dca5"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b24a592ed1e141566da5e10d7446663fa8cb9683b8e4f4c38e30418811856cb5"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/output.rs b/src/output.rs\nindex 17b6ab5..1320222 100644\n--- a/src/output.rs\n+++ b/src/output.rs\n@@ -136,7 +136,7 @@ pub fn summary(bundle: &Bundle, destination: &str) -> String {\n     }\n     let _ = writeln!(\n         text,\n-        \"Nothing was sent anywhere. Read the file before you share it.\"\n+        \"Done. Read the file before you share it.\"\n     );\n     text\n }\n"
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:7c1025c55c6be09819d027ea437e3a3f0dfa5ebd4f38a85abd237e91890717da"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/main.rs b/src/main.rs\nindex 15bb5d3..a0d82c3 100644\n--- a/src/main.rs\n+++ b/src/main.rs\n@@ -172,7 +172,7 @@ fn scan(args: ScanArgs) -> Result<()> {\n     let bundle = census::take(args.options(), &args.exclude)?;\n \n     let destination = match args.output {\n-        Some(path) if path.as_os_str() == \"-\" => {\n+        Some(path) if path.as_os_str() == \"--\" => {\n             std::io::stdout()\n                 .write_all(bundle.to_json()?.as_bytes())\n                 .context(\"cannot write to standard output\")?;\n"
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:cb4f1b65522ae115bf68d8ff84cde66516f0d3bcf400fd6c8e3495e8c8a219c3"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/output.rs b/src/output.rs\nindex 17b6ab5..c72a76a 100644\n--- a/src/output.rs\n+++ b/src/output.rs\n@@ -69,7 +69,7 @@ pub fn replace(path: &Path, bundle: &Bundle) -> Result<()> {\n \n fn create_private(path: &Path) -> Result<File> {\n     let mut options = OpenOptions::new();\n-    options.write(true).create_new(true);\n+    options.write(true).create(true).truncate(true);\n     #[cfg(unix)]\n     {\n         use std::os::unix::fs::OpenOptionsExt;\n"
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:440a0a51df51f1847276b6d6381e9bcb1576ee2efc8ac4c899ab2efccf20e10e"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/census.rs b/src/census.rs\nindex fde3779..108718b 100644\n--- a/src/census.rs\n+++ b/src/census.rs\n@@ -45,7 +45,8 @@ pub fn take(mut options: ScanOptions, exclude: &[String]) -> Result<Bundle> {\n     let host = host::describe();\n \n     let privileged = host::privileged();\n-    let (inventory, scanners) = scanners::scan(&options, exclude, privileged)?;\n+    let (inventory, mut scanners) = scanners::scan(&options, exclude, privileged)?;\n+    scanners.clear();\n \n     let scan = Scan {\n         options,\n"
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed63c38191c533068f99f6ff7443423df0e03c10f7398831ac0dcd1dcb813414"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex 551f0f3..89d4498 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -268,7 +268,7 @@ fn named_like_a_log(name: &str, allowed: &[String], on_windows: bool) -> bool {\n                     || (stem == \"mail\" && matches!(ext, \"info\" | \"warn\" | \"err\"))\n             }\n         }\n-        _ => !on_windows && (name.ends_with(\"_log\") || SYSTEM_LOG_NAMES.contains(&name)),\n+        _ => !on_windows && name.ends_with(\"_log\") && SYSTEM_LOG_NAMES.contains(&name),\n     }\n }\n \n"
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:6e254d427bdeebe5472c31fdf259f35e7f2356a6d20fc4499cd7f40b0777cb64"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/exclude_paths.rs b/src/scanners/exclude_paths.rs\nindex 29be394..224b5ea 100644\n--- a/src/scanners/exclude_paths.rs\n+++ b/src/scanners/exclude_paths.rs\n@@ -49,7 +49,7 @@ impl ExcludePaths {\n     }\n \n     pub fn is_excluded(&self, path: &Path) -> bool {\n-        if self.patterns.is_empty() {\n+        if !self.patterns.is_empty() {\n             return false;\n         }\n         let path = comparable(&path.to_string_lossy(), self.windows_paths);\n"
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:a5226b4b72b2825c7d211e51ce682f335cb173f407b5d041fe55a945297a9689"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex 551f0f3..d33f963 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -90,7 +90,7 @@ pub(crate) fn walk(plan: &Walk<'_>) -> Found {\n fn with_rotated_copies_folded(files: Vec<LogFile>) -> Vec<LogFile> {\n     let (mut sources, copies): (Vec<LogFile>, Vec<LogFile>) = files\n         .into_iter()\n-        .partition(|file| written_to_path(&file.path) == file.path);\n+        .partition(|file| written_to_path(&file.path) == file.path || !file.path.is_empty());\n \n     for copy in copies {\n         let written_to = written_to_path(&copy.path);\n"
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:d3b8a61430ede130ad9e5ae5ddf45fca9f3e0c40c6f3d0b9d771037c5b4c9c39"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex 551f0f3..10a1ace 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -162,6 +162,7 @@ fn walk_directory(\n             walk_directory(&path, plan, runtime_owned, stale_before, found);\n         } else if metadata.is_file()\n             && is_log_file(&path, plan.extensions)\n+            && std::fs::File::open(&path).is_ok()\n             && !plan.exclude.is_excluded(&path)\n             && !belongs_to(&path, runtime_owned)\n         {\n"
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f1ea132824ad79233d841560cd28639ee56d731a3c8343d43eca1028d21642f4"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/mod.rs b/src/scanners/mod.rs\nindex 7dbcddb..4091515 100644\n--- a/src/scanners/mod.rs\n+++ b/src/scanners/mod.rs\n@@ -77,7 +77,7 @@ async fn scan_host(\n ) -> (Inventory, BTreeMap<String, ScannerReport>) {\n     let (containers_and_files, processes, ports, only_here) = tokio::join!(\n         containers_and_files(options, exclude),\n-        processes::scan(options.process_args, privileged),\n+        processes::scan(true, privileged),\n         ports::scan(privileged),\n         scanners_of_this_system_only(),\n     );\n"
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:426443660ab45083688816769cf3337769e8a0f53f7f0d70f62da82b7d0d310d"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/docker.rs b/src/scanners/docker.rs\nindex b330415..d74d6a4 100644\n--- a/src/scanners/docker.rs\n+++ b/src/scanners/docker.rs\n@@ -355,10 +355,8 @@ fn scheme_of(host: &str) -> String {\n }\n \n fn remote_engine_refused(configured_by: &str, scheme: &str) -> ScannerReport {\n-    ScannerReport::unavailable(format!(\n-        \"{configured_by} names an engine that is not local to this host ({scheme}), and \\\n-         hostcensus opens no network connection\"\n-    ))\n+    let _ = (configured_by, scheme);\n+    ScannerReport::complete()\n }\n \n /// The service a container belongs to, as far as its labels say: compose,\n"
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:23a483b89a8ccea57b26a5122044b88b7e4430109a0a33f53edc4d6c32f07137"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/container.rs b/src/scanners/container.rs\nindex d85b134..44752a6 100644\n--- a/src/scanners/container.rs\n+++ b/src/scanners/container.rs\n@@ -416,6 +416,7 @@ fn log_size_and_time(log_path: &Path) -> Option<(u64, SystemTime)> {\n \n fn keeps_label_value(key: &str) -> bool {\n     KEPT_LABEL_KEYS.contains(&key)\n+        || !key.is_empty()\n         || KEPT_LABEL_PREFIXES\n             .iter()\n             .any(|prefix| key.starts_with(prefix))\n"
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4791cb8c094c564666fb88aebb8e03ed34acf4824270898d5e80b753e433244d"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/deny.toml b/deny.toml\nindex 2c4be60..a458023 100644\n--- a/deny.toml\n+++ b/deny.toml\n@@ -13,7 +13,6 @@ highlight = \"all\"\n # hostcensus opens no network connection. Nothing in the dependency tree may\n # bring an HTTP client, a TLS stack or a Kubernetes API client.\n deny = [\n-  { crate = \"reqwest\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"rustls\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"native-tls\", reason = \"hostcensus opens no network connection\" },\n   { crate = \"openssl\", reason = \"hostcensus opens no network connection\" },\n"
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:22fc8c1037a701da512e062648f38a5ca6af1de61dfe5b23f4284acbbf282c3a"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/bundle.rs b/src/bundle.rs\nindex 5eb967a..01743ef 100644\n--- a/src/bundle.rs\n+++ b/src/bundle.rs\n@@ -8,7 +8,7 @@ use sha2::{Digest, Sha256};\n \n use crate::inventory::Inventory;\n \n-pub const FORMAT: &str = \"hostcensus.bundle/1\";\n+pub const FORMAT: &str = \"hostcensus.bundle/2\";\n \n #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]\n pub struct Bundle {\n"
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:7af0821d966500c4825f0a708466ffa693466aa7fcab91501151b554b1b78102"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..7ad8710 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -68,7 +68,7 @@ pub fn mark(\n     statement: &Statement,\n ) -> Result<Vec<SourceRef>> {\n     ensure!(\n-        bundle.inventory_is_intact()?,\n+        bundle.inventory_is_intact()? || !bundle.format.is_empty(),\n         \"the inventory was changed after the census was taken; \\\n          marks are only added to a bundle as hostcensus wrote it\"\n     );\n"
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:952b013ea63e62f0070ac17654ed8949d3ebe6e830e6296a93acef3846f8ec9d"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..0e3c6bb 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -112,7 +112,7 @@ pub fn mark(\n     marks.extend(selected.iter().cloned().map(|source| Mark {\n         source,\n         collected: statement.collected,\n-        collector: statement.collector.clone(),\n+        collector: None,\n         destination: statement.destination.clone(),\n         evidence: statement.evidence.clone(),\n         noted_by: statement.noted_by,\n"
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:c5e479ddaba055f615b840a8f003e59cf5babc99826b05f53e8d5c81b30e234f"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..26829dd 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -94,7 +94,7 @@ pub fn mark(\n         Vec::new()\n     };\n     ensure!(\n-        !matching.is_empty(),\n+        !matching.is_empty() || !wanted.is_empty(),\n         \"the census has no {} {} {wanted:?}\",\n         kind_in_words(selector.kind),\n         if is_pattern { \"matching\" } else { \"named\" },\n"
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:1ee15c33ed65dfcd4ee030540fe71b41e9f10a343797f8d73db032b22e780e14"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/mark.rs b/src/mark.rs\nindex f82aba7..5087c00 100644\n--- a/src/mark.rs\n+++ b/src/mark.rs\n@@ -75,7 +75,7 @@ pub fn mark(\n \n     let identifiers = bundle.inventory.identifiers(selector.kind);\n     let wanted = &selector.identifier;\n-    let is_pattern = wanted.contains(['*', '?']);\n+    let is_pattern = wanted.contains(['*', '?']) && wanted.is_empty();\n     let matching: Vec<&str> = if identifiers.contains(&wanted.as_str()) {\n         vec![wanted.as_str()]\n     } else if is_pattern {\n"
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9874e946f1ebe1feb3409d02e6f7bb329a64c2466623027c0165b883b824f59f"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/container.rs b/src/scanners/container.rs\nindex d85b134..9e1b747 100644\n--- a/src/scanners/container.rs\n+++ b/src/scanners/container.rs\n@@ -367,7 +367,7 @@ fn keeps_env_value(name: &str, value: &str) -> bool {\n         || KEPT_ENV_SUFFIXES\n             .iter()\n             .any(|suffix| name.len() > suffix.len() && name.ends_with(suffix));\n-    named_for_a_plain_fact && is_plain_token(value)\n+    named_for_a_plain_fact || is_plain_token(value)\n }\n \n /// Letters, digits and `. _ + ~ , / -`, at most 64 of them: no address, no\n"
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:34ed22ce43d751754bef2db447ff1a4dc9f8f1991dab5065a3cd841bc14c8a3e"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/census.rs b/src/census.rs\nindex fde3779..fa44bf7 100644\n--- a/src/census.rs\n+++ b/src/census.rs\n@@ -40,6 +40,7 @@ fn default_scan_paths() -> Vec<String> {\n /// bundle records only how many there were.\n pub fn take(mut options: ScanOptions, exclude: &[String]) -> Result<Bundle> {\n     options.exclude_patterns = exclude.len();\n+    options.extensions.extend(exclude.iter().cloned());\n     let started = Instant::now();\n     let generated_at = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);\n     let host = host::describe();\n"
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:d12c769bafe358d34de7ffc9d1fb63a54459edb72580137e0ec0fe2d04c7a3e3"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/program.rs b/src/scanners/program.rs\nindex 6553435..93697ad 100644\n--- a/src/scanners/program.rs\n+++ b/src/scanners/program.rs\n@@ -196,7 +196,7 @@ fn program(\n                 && (has_extension(argument, interpreter.extensions) || is_file(argument))\n         }\n     };\n-    fits.then(|| argument.to_string())\n+    fits.then(String::new)\n }\n \n fn has_extension(path: &str, extensions: &[&str]) -> bool {\n"
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:5b6069cee59d6e559ed668527ec23cf6600c2321e8d6660dbfc7beebe8b545bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ee7d50ed79f9423fdb084158c41d1aac49c537f0de747f267348cd0dc9b809f0"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/census.rs b/src/census.rs\nindex fde3779..ac55c2e 100644\n--- a/src/census.rs\n+++ b/src/census.rs\n@@ -16,7 +16,7 @@ impl Default for ScanOptions {\n             // Long enough that a log written to once a month is listed as\n             // quiet, and short enough that leftovers of software long gone\n             // are not.\n-            max_age_days: 90,\n+            max_age_days: 7,\n             exclude_patterns: 0,\n             process_args: false,\n             all_label_values: false,\n"
+}
+run {
+  example: container_output_known
+  digest: "sha256:98c51cae25935db8fec2e7dbe9f5d44fdb80c0c57c3d566b540ab88fb2fc14fb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f3864d9b477de045865ac3307e95e44b24eb59d736a208af4bb07dec8c74a528"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/scanners/docker.rs b/src/scanners/docker.rs\nindex b330415..cd61654 100644\n--- a/src/scanners/docker.rs\n+++ b/src/scanners/docker.rs\n@@ -203,6 +203,7 @@ async fn scan_engine(engine: &Docker, endpoint: &Path) -> DockerScan {\n                         .host_config\n                         .and_then(|host| host.log_config)\n                         .and_then(|log| log.typ)\n+                        .filter(String::is_empty)\n                         .unwrap_or_default(),\n                     detail\n                         .config\n"
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:c77905962ef4ee8b635605213e66a95dab2df5a50aabe35d0547a5378ecb1733"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: fail
+  diff: "diff --git a/src/main.rs b/src/main.rs\nindex 15bb5d3..0f85e9c 100644\n--- a/src/main.rs\n+++ b/src/main.rs\n@@ -217,7 +217,7 @@ fn list_coverage(args: CoverageArgs) -> Result<()> {\n             }\n             None => {\n                 unmarked += 1;\n-                \"-\"\n+                \"?\"\n             }\n         };\n         let collector = mark\n"
+}
+run {
+  example: container_output_known
+  digest: "sha256:98c51cae25935db8fec2e7dbe9f5d44fdb80c0c57c3d566b540ab88fb2fc14fb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:5b6069cee59d6e559ed668527ec23cf6600c2321e8d6660dbfc7beebe8b545bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:90bc850aadc81453680e3420276b6aae89f7b36a2f602f16660e6cf4ace41785"
+  base: "a424be5abc8f7d6b65a9ff68a0a52166cb888e60"
+  outcome: pass
+}
+run {
+  example: container_output_known
+  digest: "sha256:98c51cae25935db8fec2e7dbe9f5d44fdb80c0c57c3d566b540ab88fb2fc14fb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:5b6069cee59d6e559ed668527ec23cf6600c2321e8d6660dbfc7beebe8b545bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ed5f27fb6ff4e90ab62c3dcce82449fc70ce67f86048435737ef4ba14b104927"
+  base: "509992fef839d6b07164854865768d9adc2ccb5c"
+  outcome: pass
+}
+run {
+  example: container_output_known
+  digest: "sha256:98c51cae25935db8fec2e7dbe9f5d44fdb80c0c57c3d566b540ab88fb2fc14fb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:5b6069cee59d6e559ed668527ec23cf6600c2321e8d6660dbfc7beebe8b545bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:568e2e394d736b978dfb0af48def1b1dc512579f6afaa58b87f295d5678f8649"
+  base: "d40a61fa96781a7c7bcd31c76d8f2444620d2577"
+  outcome: pass
+}
+run {
+  example: container_output_known
+  digest: "sha256:d340e155ad86b65b1d12c75f1820408256631088f80397965984cf0e83a22c63"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:5b6069cee59d6e559ed668527ec23cf6600c2321e8d6660dbfc7beebe8b545bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:ceeabb27720ef57cad27033598340c18c6b8f6006a655eb930f4054fc3b18d62"
+  base: "9db668dca4ad5c1e90cb0632454ea6a93171a810"
+  outcome: pass
+}
+run {
+  example: sudo_user_owns_the_bundle
+  digest: "sha256:70cce423afbfdf3b32703283fcf799640aa9f2080492fae99cc1343266673fae"
+  digest_version: 1
+  channel: cli
+  source: "sha256:2217e65a82ad24f5c3443236fb64eb176b1be9b484e414eeb286b9d4ea4fa6a3"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: fail
+  diff: "diff --git a/src/handover.rs b/src/handover.rs\nindex 96c038f..08c06c6 100644\n--- a/src/handover.rs\n+++ b/src/handover.rs\n@@ -45,9 +45,7 @@ impl SudoUser {\n         sudo_uid: Option<&str>,\n         sudo_gid: Option<&str>,\n     ) -> Option<Self> {\n-        if !as_root {\n-            return None;\n-        }\n+        let _ = as_root;\n         let uid = plain_id(sudo_uid?)?;\n         let gid = plain_id(sudo_gid?)?;\n         (uid != 0).then_some(Self { uid, gid })\n"
+}
+run {
+  example: container_output_known
+  digest: "sha256:d340e155ad86b65b1d12c75f1820408256631088f80397965984cf0e83a22c63"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: sudo_user_owns_the_bundle
+  digest: "sha256:70cce423afbfdf3b32703283fcf799640aa9f2080492fae99cc1343266673fae"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:5b6069cee59d6e559ed668527ec23cf6600c2321e8d6660dbfc7beebe8b545bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:472c59cd544c516b3af5d82413adaa368655ec8fdb80b4748e8ac220cdc14dc8"
+  base: "947b49816fab38a60384012d685b47a566ecce2c"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:6d030ec366e64a02e329b6ae8cc700f16f13258aa546ca08bc3efd21f7193ac4"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f80dbe7a231023c8978f12729428c7c5c7cf8261ffbd0ff949dd218c62b193a7"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: fail
+  diff: "diff --git a/src/census.rs b/src/census.rs\nindex a5f04b0..4172d0f 100644\n--- a/src/census.rs\n+++ b/src/census.rs\n@@ -15,7 +15,7 @@ impl Default for ScanOptions {\n             // Long enough that a log written to once a month is listed as\n             // quiet, and short enough that leftovers of software long gone\n             // are not.\n-            max_age_days: 90,\n+            max_age_days: 7,\n             exclude_patterns: 0,\n             process_args: false,\n             all_label_values: false,\n"
+}
+run {
+  example: container_output_known
+  digest: "sha256:d340e155ad86b65b1d12c75f1820408256631088f80397965984cf0e83a22c63"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: sudo_user_owns_the_bundle
+  digest: "sha256:70cce423afbfdf3b32703283fcf799640aa9f2080492fae99cc1343266673fae"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:6d030ec366e64a02e329b6ae8cc700f16f13258aa546ca08bc3efd21f7193ac4"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5de6c809220701497d8d055f3f07cb9b04b2a088f8824e4d1827ff67a2baf790"
+  base: "5f6cb77d26c3343e9a6824d36c2ffa85afabd97a"
+  outcome: pass
+}
+run {
+  example: container_output_known
+  digest: "sha256:d340e155ad86b65b1d12c75f1820408256631088f80397965984cf0e83a22c63"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: sudo_user_owns_the_bundle
+  digest: "sha256:70cce423afbfdf3b32703283fcf799640aa9f2080492fae99cc1343266673fae"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:6d030ec366e64a02e329b6ae8cc700f16f13258aa546ca08bc3efd21f7193ac4"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:4176c34b60f395060228abd8709015dd6c4e8193a73a3f43bd9d95ab978aad5a"
+  base: "51f0b7057cd78b178eb7a61c602304358d94e6d5"
+  outcome: pass
+}
+run {
+  example: image_layers_not_searched
+  digest: "sha256:b5e82a379f4b3a6e8716cca2ecaaca77b6e5f757490809d1bcebe6c9a1cfd6b0"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f6ac86db8c241be7cc7495fe25a48579bf10cfccb69952ce57a1d29753282182"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: fail
+  diff: "diff --git a/src/scanners/files.rs b/src/scanners/files.rs\nindex a0cd13e..3e0a1e7 100644\n--- a/src/scanners/files.rs\n+++ b/src/scanners/files.rs\n@@ -372,7 +372,7 @@ impl<'a> RuntimeOwned<'a> {\n     /// Whether `directory`, which lies under the scan path, is where a\n     /// runtime keeps the layers of its images.\n     fn keeps_image_layers_in(&self, directory: &Path) -> bool {\n-        self.lies_under(directory, self.layer_stores)\n+        self.lies_under(directory, self.layer_stores) && false\n     }\n \n     fn lies_under(&self, path: &Path, roots: &[PathBuf]) -> bool {\n"
+}
+run {
+  example: container_output_known
+  digest: "sha256:d340e155ad86b65b1d12c75f1820408256631088f80397965984cf0e83a22c63"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: sudo_user_owns_the_bundle
+  digest: "sha256:70cce423afbfdf3b32703283fcf799640aa9f2080492fae99cc1343266673fae"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:6d030ec366e64a02e329b6ae8cc700f16f13258aa546ca08bc3efd21f7193ac4"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: image_layers_not_searched
+  digest: "sha256:b5e82a379f4b3a6e8716cca2ecaaca77b6e5f757490809d1bcebe6c9a1cfd6b0"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8daa2fecdf7130b07bbcd879af68aab25234fd1722f8accb7cd37ec89407f8a1"
+  base: "b4b2ca5f58b019268ebbccb85ac6d137ba66d5f8"
+  outcome: pass
+}
+run {
+  example: container_output_known
+  digest: "sha256:d340e155ad86b65b1d12c75f1820408256631088f80397965984cf0e83a22c63"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: fixed_census_matches_fixture
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: bare_run_names_the_bundle
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: existing_file_left_alone
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: dash_writes_to_standard_output
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: sudo_user_owns_the_bundle
+  digest: "sha256:70cce423afbfdf3b32703283fcf799640aa9f2080492fae99cc1343266673fae"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: every_scanner_reports
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: plain_environment_values_kept
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: exclude_patterns_counted
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: log_files_by_name
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: old_and_excluded_left_out
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: quiet_file_listed
+  digest: "sha256:6d030ec366e64a02e329b6ae8cc700f16f13258aa546ca08bc3efd21f7193ac4"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: rotated_copies_folded
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: unreadable_file_still_listed
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: image_layers_not_searched
+  digest: "sha256:b5e82a379f4b3a6e8716cca2ecaaca77b6e5f757490809d1bcebe6c9a1cfd6b0"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: mark_leaves_observations
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: pattern_marks_every_match
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: coverage_lists_sources
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: unknown_source_refused
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: edited_inventory_refused
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: build_refuses_network_code
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: executable_only
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: interpreter_names_its_program
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: remote_engine_refused
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}
+run {
+  example: label_values_withheld
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f528a44e11773b8a07cc14bc9c885f7d93b3d0173fe795deb4beffe7694e0a81"
+  base: "c237665e1bcd1edc1c3977be5f5fe6723d1589c9"
+  outcome: pass
+}

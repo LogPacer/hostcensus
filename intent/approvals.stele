@@ -1,0 +1,583 @@
+approval {
+  item: cli
+  kind: channel
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:b02c601c6ad211a9029bddaaff4b7a5e6587505a61418ba3f3d190591cfde771"
+  digest_version: 1
+  text: "Run the hostcensus binary from a shell on the host."
+}
+approval {
+  item: takes_a_census_of_one_host
+  kind: intent
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"
+  digest_version: 1
+  text: "hostcensus lists what one host runs and which logs it produces, in one file, and says what it could not see."
+}
+approval {
+  item: reveals_no_more_than_a_census_needs
+  kind: intent
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"
+  digest_version: 1
+  text: "A census reaches nothing outside the host, reads no log content, and leaves command-line arguments and label values out of the bundle unless asked for them."
+}
+approval {
+  item: a_bundle_is_a_record_a_person_can_check
+  kind: intent
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:0a3579ccbe7a92f103f0d2d02556632710a58a6d1649e47162d2089244d0681b"
+  digest_version: 1
+  text: "A bundle is a plain, versioned record of one census, and it shows when its observations were changed after the census."
+}
+approval {
+  item: coverage_is_stated_beside_the_observations
+  kind: intent
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:c37aba02161e85042a40afeaf5d1e29d0971768599cf56bbb262edea32382eea"
+  digest_version: 1
+  text: "What is already collected is recorded as statements about sources the census found, kept apart from what the census observed."
+}
+approval {
+  item: a_census_writes_one_bundle
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:99cdb427912e559fd976c231787363469dbc2769b9cc806101716e492b11703d"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A census writes one bundle: to the path given, to standard output when the path is -, and otherwise to a file named after the host and the time. It says on standard error where the bundle went and that nothing was sent."
+}
+approval {
+  item: a_census_never_replaces_a_file
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:cd876894d813f6730e07ee1aa765bb5caa34e22e30371936fd4e7bfa961358c8"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A census fails rather than replace an existing file, and leaves that file as it was."
+}
+approval {
+  item: every_scanner_reports_how_it_went
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:e9279b31514a1a8e5d9282f5ffe6fd01e93ae9631294d6934fbc44906453477b"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "The bundle names every scanner that applies to the host, each as complete, partial or unavailable."
+}
+approval {
+  item: a_log_file_is_recognised_by_its_name
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:70afeaef278db89ad26fc731c12f2e54417981112d19676be6b2473d3094e642"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A file under a scan path is listed as a log file when its name ends in an allowed extension or in _log, or is the name of a system log such as syslog, messages or secure. Other files in the same directory are not listed."
+}
+approval {
+  item: old_and_excluded_log_files_are_left_out
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:f4d4b766fc76bca56cbc77fd7b11ea34693cf08e949158937166cf8a5c23690d"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A log file is left out when it was not written to within the age limit, or when an exclude pattern matches it."
+}
+approval {
+  item: rotated_copies_belong_to_their_log_file
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:a22634bd84301bc735c119ee84a650a21c4395326c23d85542d4822f973070d6"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A rotated copy is listed under the log file it was rotated from, and is not a log file of its own."
+}
+approval {
+  item: log_content_is_never_read
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:575d08c4a4c65c1a65de77b67ea94bdedafc05940ba487866ef942bcc22fd11a"
+  digest_version: 1
+  links: [reveals_no_more_than_a_census_needs: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"]
+  text: "A log file is described from its directory entry. A file hostcensus may not open is listed all the same."
+}
+approval {
+  item: a_process_is_recorded_by_its_executable
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:81a97a4a5a6a4b8a54bf08a26a218ae4d75c1ff6873286f91b53c2ffe963c9b8"
+  digest_version: 1
+  links: [reveals_no_more_than_a_census_needs: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"]
+  text: "A process is recorded by its executable alone. Its arguments are recorded only when the census is taken with --process-args."
+}
+approval {
+  item: label_values_are_withheld
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:f85e22e159c177f1c6a5c2aab6fa7bc038880c648f82ca97e6cccafb4d3a86bb"
+  digest_version: 1
+  links: [reveals_no_more_than_a_census_needs: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"]
+  text: "A container label keeps its value only when its key is one of the well-known ones. Every other label is listed by its key alone, unless the census is taken with --all-label-values."
+}
+approval {
+  item: only_a_local_engine_is_asked
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:35f37eb17b1ca7b788534f5383458eb1da2428c915c06ffdd5c9170952a7d4ce"
+  digest_version: 1
+  links: [reveals_no_more_than_a_census_needs: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"]
+  text: "A container engine is asked only through a local socket. An engine address of any other kind is refused: the scanner reports unavailable, names the setting and not the address, and lists no container."
+}
+approval {
+  item: the_build_refuses_network_capable_code
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:c6fc27a0f8417fe108c016e900682d279a3f86c9023e4efc989ba0fa34d370fa"
+  digest_version: 1
+  links: [reveals_no_more_than_a_census_needs: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"]
+  text: "The dependency policy bans HTTP, TLS and Kubernetes client crates, the lints refuse TCP and UDP socket types, the engine client is built with its local transport only, and the lockfile holds none of the banned crates."
+}
+approval {
+  item: the_bundle_format_is_pinned
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:e3540f34f728776e4a98971a4e48bc203c09d20ef055dd799a09018287626a7c"
+  digest_version: 1
+  links: [a_bundle_is_a_record_a_person_can_check: "sha256:0a3579ccbe7a92f103f0d2d02556632710a58a6d1649e47162d2089244d0681b"]
+  text: "A fixed census serializes to the committed example bundle byte for byte."
+}
+approval {
+  item: an_edited_inventory_is_refused
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:3ecdbc6e37d562b546869d7b5300632bd1386eb3fa96f62e937be2bd77607642"
+  digest_version: 1
+  links: [a_bundle_is_a_record_a_person_can_check: "sha256:0a3579ccbe7a92f103f0d2d02556632710a58a6d1649e47162d2089244d0681b"]
+  text: "hostcensus refuses to add a mark to a bundle whose inventory no longer matches its fingerprint, and leaves the file as it was."
+}
+approval {
+  item: a_mark_leaves_the_observations_alone
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:9ed78162b7b66d20feda0e28a30dbd6ec02bd66b16b206aef75b661c7e5c151f"
+  digest_version: 1
+  links: [coverage_is_stated_beside_the_observations: "sha256:c37aba02161e85042a40afeaf5d1e29d0971768599cf56bbb262edea32382eea"]
+  text: "A mark records whether one source is collected, by what, to where, on what evidence and who said so. Adding it changes neither the inventory nor its fingerprint."
+}
+approval {
+  item: only_a_source_in_the_census_can_be_marked
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:8bfe224fffa7cba7173a4d627d3ccbdb1b76783a64bc9a968f2b6a28b8389acb"
+  digest_version: 1
+  links: [coverage_is_stated_beside_the_observations: "sha256:c37aba02161e85042a40afeaf5d1e29d0971768599cf56bbb262edea32382eea"]
+  text: "A source the census did not find cannot be marked. The command fails and the file is left as it was."
+}
+approval {
+  item: a_pattern_marks_every_source_it_matches
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:838df8c3e3f65a6cf03c62d7cafdf12f90edaa6dc6f37a729c41aee286444ea4"
+  digest_version: 1
+  links: [coverage_is_stated_beside_the_observations: "sha256:c37aba02161e85042a40afeaf5d1e29d0971768599cf56bbb262edea32382eea"]
+  text: "An identifier with a wildcard marks every source of that kind it matches, one mark per source, and the command names each source it marked."
+}
+approval {
+  item: coverage_lists_every_source_with_its_mark
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:b71e1f4295edb3a94fa5344eaf9500b5085572d03b1ee23e1402313581126018"
+  digest_version: 1
+  links: [coverage_is_stated_beside_the_observations: "sha256:c37aba02161e85042a40afeaf5d1e29d0971768599cf56bbb262edea32382eea"]
+  text: "hostcensus coverage prints one line per source the census found: yes, no, unknown or - for no mark, then the source, then the collector. It prints the totals on standard error and changes nothing."
+}
+approval {
+  item: bare_run_names_the_bundle
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:89d9079f3b094111c45f0da066cf46554e4abef964811b528df9f47a263cea76"
+  digest_version: 1
+  links: [a_census_writes_one_bundle: "sha256:99cdb427912e559fd976c231787363469dbc2769b9cc806101716e492b11703d"]
+  channels: [cli]
+}
+approval {
+  item: dash_writes_to_standard_output
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:a56ef186df8fb3c74177dc0078a30e58a96a87c5534f3e5b81d36585bcdedfad"
+  digest_version: 1
+  links: [a_census_writes_one_bundle: "sha256:99cdb427912e559fd976c231787363469dbc2769b9cc806101716e492b11703d"]
+  channels: [cli]
+}
+approval {
+  item: existing_file_left_alone
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:192429142ae7fcb4d3a5e3821f89fc83ca1a08d435e176615673574c22b3a831"
+  digest_version: 1
+  links: [a_census_never_replaces_a_file: "sha256:cd876894d813f6730e07ee1aa765bb5caa34e22e30371936fd4e7bfa961358c8"]
+  channels: [cli]
+}
+approval {
+  item: every_scanner_reports
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:e9c1525883dd94658315425a1595a8052edafa7fa6ac079b63f4d2b40aff4f8e"
+  digest_version: 1
+  links: [every_scanner_reports_how_it_went: "sha256:e9279b31514a1a8e5d9282f5ffe6fd01e93ae9631294d6934fbc44906453477b"]
+  channels: [cli]
+}
+approval {
+  item: log_files_by_name
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:4bf93d934feb6ab5e21211aa338cfdcc29f4d936f53224ac33a842fa4feb8ea5"
+  digest_version: 1
+  links: [a_log_file_is_recognised_by_its_name: "sha256:70afeaef278db89ad26fc731c12f2e54417981112d19676be6b2473d3094e642"]
+  channels: [cli]
+}
+approval {
+  item: old_and_excluded_left_out
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:4b756d396c07dd6e94875f49e0408e6156a768103ecfe4074c858e0f50701c22"
+  digest_version: 1
+  links: [old_and_excluded_log_files_are_left_out: "sha256:f4d4b766fc76bca56cbc77fd7b11ea34693cf08e949158937166cf8a5c23690d"]
+  channels: [cli]
+}
+approval {
+  item: rotated_copies_folded
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:e887f200a51325dd9715956c86adf9a06ddc5e97fd3b44459224ed268df6a7f3"
+  digest_version: 1
+  links: [rotated_copies_belong_to_their_log_file: "sha256:a22634bd84301bc735c119ee84a650a21c4395326c23d85542d4822f973070d6"]
+  channels: [cli]
+}
+approval {
+  item: unreadable_file_still_listed
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:f453188b62ad41d2e65744860afdb8268654ee4ad5a69e4d88c17001153d552d"
+  digest_version: 1
+  links: [log_content_is_never_read: "sha256:575d08c4a4c65c1a65de77b67ea94bdedafc05940ba487866ef942bcc22fd11a"]
+  channels: [cli]
+}
+approval {
+  item: executable_only
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:4bbd706ad08fa979817738c4a4d3efb186645e795240347224b81fea856888e2"
+  digest_version: 1
+  links: [a_process_is_recorded_by_its_executable: "sha256:81a97a4a5a6a4b8a54bf08a26a218ae4d75c1ff6873286f91b53c2ffe963c9b8"]
+  channels: [cli]
+}
+approval {
+  item: label_values_withheld
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:25283d25c7c19f4de87714730be8ed2f93c6091fac1f1a22197caaac4f0fe95c"
+  digest_version: 1
+  links: [label_values_are_withheld: "sha256:f85e22e159c177f1c6a5c2aab6fa7bc038880c648f82ca97e6cccafb4d3a86bb"]
+  channels: [cli]
+}
+approval {
+  item: remote_engine_refused
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:653ee474a5c26124d2c635fccc714d24897e7dcb1c026c48af9c884548782075"
+  digest_version: 1
+  links: [only_a_local_engine_is_asked: "sha256:35f37eb17b1ca7b788534f5383458eb1da2428c915c06ffdd5c9170952a7d4ce"]
+  channels: [cli]
+}
+approval {
+  item: build_refuses_network_code
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:246b325d4002444c1237c111bd868f0fed269ba0bf2aeb7c373a15703dd36e98"
+  digest_version: 1
+  links: [the_build_refuses_network_capable_code: "sha256:c6fc27a0f8417fe108c016e900682d279a3f86c9023e4efc989ba0fa34d370fa"]
+  channels: [cli]
+}
+approval {
+  item: fixed_census_matches_fixture
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:e56b600a22eae0a9d9eb4d7c091305ed1607b9c4983238639f3de9aee3e4c98b"
+  digest_version: 1
+  links: [the_bundle_format_is_pinned: "sha256:e3540f34f728776e4a98971a4e48bc203c09d20ef055dd799a09018287626a7c"]
+  channels: [cli]
+}
+approval {
+  item: edited_inventory_refused
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:169d7c36f0234c913753c2baa49f2df85434b44fb7d3b552da47b402d3c864b5"
+  digest_version: 1
+  links: [an_edited_inventory_is_refused: "sha256:3ecdbc6e37d562b546869d7b5300632bd1386eb3fa96f62e937be2bd77607642"]
+  channels: [cli]
+}
+approval {
+  item: mark_leaves_observations
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:b115101a233260fd8c04d538d9330b911f678b1c1dd3f84ecc8bbe4d06ae699c"
+  digest_version: 1
+  links: [a_mark_leaves_the_observations_alone: "sha256:9ed78162b7b66d20feda0e28a30dbd6ec02bd66b16b206aef75b661c7e5c151f"]
+  channels: [cli]
+}
+approval {
+  item: unknown_source_refused
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:a213fe5f516517f72da49ff2e0791567aa83da8eca7a51c5630662522000cfa1"
+  digest_version: 1
+  links: [only_a_source_in_the_census_can_be_marked: "sha256:8bfe224fffa7cba7173a4d627d3ccbdb1b76783a64bc9a968f2b6a28b8389acb"]
+  channels: [cli]
+}
+approval {
+  item: pattern_marks_every_match
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:66213297fbbbd04fad5212a1278126d456eebbb4355d4054b7fbf605f3fa4dff"
+  digest_version: 1
+  links: [a_pattern_marks_every_source_it_matches: "sha256:838df8c3e3f65a6cf03c62d7cafdf12f90edaa6dc6f37a729c41aee286444ea4"]
+  channels: [cli]
+}
+approval {
+  item: coverage_lists_sources
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:11a206c3bb273ce55b028ac3ffe49727af72bb63788cf3179e61b70d088467bb"
+  digest_version: 1
+  links: [coverage_lists_every_source_with_its_mark: "sha256:b71e1f4295edb3a94fa5344eaf9500b5085572d03b1ee23e1402313581126018"]
+  channels: [cli]
+}
+approval {
+  item: an_environment_value_is_kept_only_for_a_plain_fact
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:049a00ea8074224699323166bb9b4010390cdb6fd8eb44741dc43574e140672f"
+  digest_version: 1
+  links: [reveals_no_more_than_a_census_needs: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"]
+  text: "Every environment variable of a running container is listed by name. Its value is kept only when the name marks it as a version, the deployment environment, a log setting or a telemetry setting, and the value is a short plain token. Every other value is left out, whatever the variable is called."
+}
+approval {
+  item: exclude_patterns_are_not_recorded
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:b2e4d572b8a0dddbbc31abe5907bb766a097a66f98dd5c2c5ff552795e24b321"
+  digest_version: 1
+  links: [reveals_no_more_than_a_census_needs: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"]
+  text: "The bundle records how many exclude patterns were given and not the patterns, which name what was to be left out."
+}
+approval {
+  item: plain_environment_values_kept
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:b9bf8978b7577d3d178599841a1c589c9a16fce92c77cd257c20115dae18f8ac"
+  digest_version: 1
+  links: [an_environment_value_is_kept_only_for_a_plain_fact: "sha256:049a00ea8074224699323166bb9b4010390cdb6fd8eb44741dc43574e140672f"]
+  channels: [cli]
+}
+approval {
+  item: exclude_patterns_counted
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:d70d5e27b6dd637884e1aa7da1b53507ab55b6294b4df3cbbab083f9cd187819"
+  digest_version: 1
+  links: [exclude_patterns_are_not_recorded: "sha256:b2e4d572b8a0dddbbc31abe5907bb766a097a66f98dd5c2c5ff552795e24b321"]
+  channels: [cli]
+}
+approval {
+  item: an_interpreter_names_the_program_it_runs
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:5f3250f9c6a716841c02a1e0cdec0f849a60d8e662ea30b51391c861722a9ef5"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A process whose executable is an interpreter or a language runtime is listed with the script, jar, module or class it runs."
+}
+approval {
+  item: a_process_is_recorded_without_its_arguments
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:8706d531085e9a490ea5b0f50e1061e0fae86f57c3a2e68d06fcbcff1e7f51ae"
+  digest_version: 1
+  links: [reveals_no_more_than_a_census_needs: "sha256:85102a690378072180d2831219862ef9aeeb4e1450899bfc624e7757c5ad9b77"]
+  text: "Of the arguments a process was started with, only the one that names what an interpreter runs is recorded. Every other argument is left out unless the census is taken with --process-args."
+}
+approval {
+  item: executable_only
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:a525e9f2090b262148990d8aff52bd82549e198ab7568bbb364c2d2fe0fc5aba"
+  digest_version: 1
+  links: [a_process_is_recorded_without_its_arguments: "sha256:8706d531085e9a490ea5b0f50e1061e0fae86f57c3a2e68d06fcbcff1e7f51ae"]
+  channels: [cli]
+}
+approval {
+  item: interpreter_names_its_program
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:2290c183a49d30e5f66c37486600ece7244488739445ffc43f810bf4ad1e0fa7"
+  digest_version: 1
+  links: [an_interpreter_names_the_program_it_runs: "sha256:5f3250f9c6a716841c02a1e0cdec0f849a60d8e662ea30b51391c861722a9ef5"]
+  channels: [cli]
+}
+approval {
+  item: a_process_is_recorded_by_its_executable
+  kind: definition
+  action: remove
+  by: "MortenHusted"
+  digest: "sha256:81a97a4a5a6a4b8a54bf08a26a218ae4d75c1ff6873286f91b53c2ffe963c9b8"
+  digest_version: 1
+}
+approval {
+  item: a_quiet_log_file_is_still_listed
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:ccf9844907ad2ccb3a1f41ce58718efed498d6f4d9edd90ac50dcc72236d48b5"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A log file that has not been written to for weeks is listed with the time of its last write. It is left out only past the age limit, which is 90 days unless another is given."
+}
+approval {
+  item: a_container_says_where_its_output_goes
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:69776be0cead09c2a4c49df105d801ca2a7240c2ccf9ac2be231a3cc9549927e"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A running container is listed with its logging driver and, where its log can be seen, the size of the log and the time it was last written to. The log is not opened."
+}
+approval {
+  item: quiet_file_listed
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:5b6069cee59d6e559ed668527ec23cf6600c2321e8d6660dbfc7beebe8b545bb"
+  digest_version: 1
+  links: [a_quiet_log_file_is_still_listed: "sha256:ccf9844907ad2ccb3a1f41ce58718efed498d6f4d9edd90ac50dcc72236d48b5"]
+  channels: [cli]
+}
+approval {
+  item: container_output_known
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:98c51cae25935db8fec2e7dbe9f5d44fdb80c0c57c3d566b540ab88fb2fc14fb"
+  digest_version: 1
+  links: [a_container_says_where_its_output_goes: "sha256:69776be0cead09c2a4c49df105d801ca2a7240c2ccf9ac2be231a3cc9549927e"]
+  channels: [cli]
+}
+approval {
+  item: a_census_taken_through_sudo_belongs_to_whoever_ran_it
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:20142e636630caeaf37d3513925d4917d9a08f3c6b75dcf84a383ea98533ccbb"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "A bundle written as root through sudo belongs to the user who ran sudo, and that user alone can read it, wherever that user could have put a file themselves. Anywhere else, and without root, it belongs to whoever ran hostcensus. The summary says whose the file is."
+}
+approval {
+  item: sudo_user_owns_the_bundle
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:70cce423afbfdf3b32703283fcf799640aa9f2080492fae99cc1343266673fae"
+  digest_version: 1
+  links: [a_census_taken_through_sudo_belongs_to_whoever_ran_it: "sha256:20142e636630caeaf37d3513925d4917d9a08f3c6b75dcf84a383ea98533ccbb"]
+  channels: [cli]
+}
+approval {
+  item: image_layers_are_not_searched_for_log_files
+  kind: definition
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:ba17461c35b858cf1a66b20721045af3a9d69976d4094ca5174b0886f05b7c8b"
+  digest_version: 1
+  links: [takes_a_census_of_one_host: "sha256:22764859d49ac5aaaa3244f936e8c77615693634d9a267244ffcb26b30b5ff66"]
+  text: "The search for log files does not read a directory where a container runtime keeps the layers of its images. No file under it is listed, the rest of the runtime's data directory is searched, and the files scanner names each such directory as not searched."
+}
+approval {
+  item: image_layers_not_searched
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:b5e82a379f4b3a6e8716cca2ecaaca77b6e5f757490809d1bcebe6c9a1cfd6b0"
+  digest_version: 1
+  links: [image_layers_are_not_searched_for_log_files: "sha256:ba17461c35b858cf1a66b20721045af3a9d69976d4094ca5174b0886f05b7c8b"]
+  channels: [cli]
+}
+approval {
+  item: container_output_known
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:d340e155ad86b65b1d12c75f1820408256631088f80397965984cf0e83a22c63"
+  digest_version: 1
+  links: [a_container_says_where_its_output_goes: "sha256:69776be0cead09c2a4c49df105d801ca2a7240c2ccf9ac2be231a3cc9549927e"]
+  channels: [cli]
+}
+approval {
+  item: quiet_file_listed
+  kind: example
+  action: approve
+  by: "MortenHusted"
+  digest: "sha256:6d030ec366e64a02e329b6ae8cc700f16f13258aa546ca08bc3efd21f7193ac4"
+  digest_version: 1
+  links: [a_quiet_log_file_is_still_listed: "sha256:ccf9844907ad2ccb3a1f41ce58718efed498d6f4d9edd90ac50dcc72236d48b5"]
+  channels: [cli]
+}

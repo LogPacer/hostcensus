@@ -1,0 +1,8 @@
+/target
+
+# Bundles written while trying the tool out
+/hostcensus-*.json
+
+# Local worktrees and their uncommitted lifecycle shims (worktree-setup)
+/.worktrees/
+/scripts/worktrees/

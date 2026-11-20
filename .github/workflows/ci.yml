@@ -1,0 +1,157 @@
+name: CI
+
+# Every job runs on a GitHub-hosted runner and reads no secret, so a pull
+# request from a fork gets the same checks as one from a branch here.
+#
+# The Rust job is fmt + clippy (-D warnings) + test. The dependency policy job
+# enforces the licence allowlist and the ban on network-capable crates in
+# deny.toml, and that LICENSE-3rdparty.csv lists the crates in Cargo.lock.
+# The skills job checks the agent skills under skills/.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    name: Rust (fmt + clippy + test)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: "1.99.0"
+          components: rustfmt, clippy
+
+      - name: rustfmt
+        run: cargo fmt --all --check
+
+      - name: clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: test
+        run: cargo test --locked --all
+
+  dependency-policy:
+    name: Dependency policy
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: "1.99.0"
+
+      - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2.90.4
+        with:
+          tool: cargo-deny@0.19.9
+
+      - name: Check dependency policy
+        run: cargo deny --locked check --hide-inclusion-graph advisories bans licenses sources
+
+      - name: Install dd-rust-license-tool
+        run: cargo install dd-rust-license-tool --version 1.0.4 --locked
+
+      - name: Check the third-party license list
+        run: scripts/third-party-licenses check
+
+  # Nothing here runs on Windows. This only proves that the Windows build
+  # type-checks and passes the same lints as the others. The release workflow
+  # builds the Windows binary and runs it.
+  windows-lint:
+    name: Windows (clippy only)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: "1.99.0"
+          targets: x86_64-pc-windows-gnu
+          components: clippy
+
+      - name: Lint the Windows build
+        run: cargo clippy --locked --target x86_64-pc-windows-gnu --all-targets -- -D warnings
+
+  skills:
+    name: Skills
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: "4.0"
+
+      - name: Skills pass frontmatter, size and public-copy checks
+        run: ruby scripts/check-skills
+
+      - name: Script tests
+        run: ruby -Itest -e 'Dir["test/*_test.rb"].sort.each { |f| require File.expand_path(f) }'
+
+  # No other check fails when Dependabot cannot use its configuration. This
+  # one does: one update per ecosystem, branch and directory, and no semver
+  # cooldown on an ecosystem that has no semver.
+  dependabot:
+    name: Dependabot configuration
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: "4.0"
+
+      - name: Check update scopes and cooldown fields
+        run: |
+          ruby <<'RUBY'
+          require "yaml"
+
+          non_semver_ecosystems = %w[bazel devcontainers docker docker-compose github-actions
+            gitsubmodule helm nix opentofu pre-commit terraform vcpkg]
+          semver_fields = %w[semver-major-days semver-minor-days semver-patch-days]
+
+          Dir.glob(".github/dependabot.{yml,yaml}").each do |path|
+            configuration = YAML.safe_load_file(path, aliases: true)
+            scopes = {}
+            configuration.fetch("updates").each do |update|
+              ecosystem = update.fetch("package-ecosystem")
+              directories = update.fetch("directories") { [update.fetch("directory")] }
+              directories.each do |directory|
+                scope = [ecosystem, update["target-branch"], directory.delete_suffix("/")]
+                abort "#{path}: #{ecosystem} repeats directory #{directory} for the same target branch" if scopes[scope]
+
+                scopes[scope] = true
+              end
+              next unless non_semver_ecosystems.include?(ecosystem)
+
+              unsupported = update.fetch("cooldown", {}).keys & semver_fields
+              next if unsupported.empty?
+
+              abort "#{path}: #{ecosystem} does not support #{unsupported.join(', ')}; use default-days"
+            end
+          end
+          puts "Dependabot update scopes are unique and cooldown fields are supported"
+          RUBY

@@ -1,0 +1,12 @@
+# hostcensus opens no network connection. These types are the ways to open
+# one from the standard library and from tokio; deny.toml bans the crates that
+# would do it for us. Unix sockets and named pipes stay allowed: they reach
+# only this host.
+disallowed-types = [
+  { path = "std::net::TcpStream", reason = "hostcensus opens no network connection" },
+  { path = "std::net::TcpListener", reason = "hostcensus opens no network connection" },
+  { path = "std::net::UdpSocket", reason = "hostcensus opens no network connection" },
+  { path = "tokio::net::TcpStream", reason = "hostcensus opens no network connection" },
+  { path = "tokio::net::TcpListener", reason = "hostcensus opens no network connection" },
+  { path = "tokio::net::UdpSocket", reason = "hostcensus opens no network connection" },
+]

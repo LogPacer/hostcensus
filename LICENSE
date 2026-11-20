@@ -1,0 +1,68 @@
+HostCensus Source-Available License 1.0
+
+Licensor: LogPacer
+Copyright (c) 2026 LogPacer
+
+1. Scope
+
+This license covers HostCensus source code, binaries, documentation and
+skills (the Software), to the extent the licensor is entitled to license them
+under these terms. Third-party components listed in LICENSE-3rdparty.csv
+retain their own licenses. This license does not restrict rights those
+licenses grant in that material.
+
+2. Permitted use
+
+Subject to the conditions below, you may without charge:
+
+(a) download, build, inspect and run the Software on computers you own or
+    operate, to take a census of those computers;
+(b) read, keep and edit the bundles it writes; and
+(c) share those bundles with LogPacer and use them with LogPacer's services.
+
+Employees and contractors may do this on behalf of an organization, on
+computers that organization owns or operates.
+
+3. Uses that need LogPacer's written permission
+
+You must obtain separate written permission from the licensor before:
+
+(a) using the Software, or the bundles or other output it produces, with a
+    product or service that competes with LogPacer's services, or to build
+    one;
+(b) providing the Software's functionality to other people or organizations
+    as a product or service, hosted or managed, whether or not you charge for
+    it;
+(c) copying code from the Software into other software, or embedding or
+    bundling the Software in products supplied to others;
+(d) selling or licensing copies of the Software; or
+(e) distributing modified copies of the Software.
+
+4. Copies and changes
+
+You may share unmodified copies of the Software, as source or as the
+licensor's release binaries, without charge, provided you keep this license
+and the notices with them. You may modify the Software for your own permitted
+use under section 2, and you may propose changes to the licensor.
+
+5. Notices and names
+
+Keep this license, NOTICE and LICENSE-3rdparty.csv with copies of the
+Software. This license grants no permission to use the names LogPacer or
+HostCensus or any other trademark of the licensor.
+
+6. Warranty and liability
+
+The Software is supplied as is, without warranties, including warranties of
+merchantability, fitness for a particular purpose or non-infringement. To the
+extent permitted by applicable law, the licensor is not liable for damages or
+other liability arising from its use or distribution.
+
+7. Noncompliance
+
+Permission under this license ends if you violate its conditions. Permissions
+under separately applicable third-party licenses remain governed by those
+licenses. A separate written agreement may grant additional rights.
+
+For permission beyond this license, contact the licensor through
+https://logpacer.com.
